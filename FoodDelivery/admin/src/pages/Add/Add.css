@@ -1,0 +1,102 @@
+/* Container for the Add page */
+.add {
+    width: 70%;
+    margin: 50px auto; /* Căn giữa cả chiều ngang và thêm khoảng cách trên */
+    color: #333; /* Màu chữ trung tính, dễ đọc hơn */
+    font-size: 16px;
+    background-color: #f9f9f9; /* Màu nền nhẹ nhàng */
+    padding: 20px;
+    border-radius: 8px; /* Bo góc mềm mại */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Thêm hiệu ứng đổ bóng */
+}
+
+/* Form container */
+.add form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Khoảng cách giữa các phần tử */
+}
+
+/* Image upload section */
+.add-img-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.add-img-upload img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover; /* Đảm bảo hình ảnh không bị méo */
+    border: 2px dashed #ccc; /* Đường viền dạng nét đứt */
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.add-img-upload img:hover {
+    border-color: #007bff; /* Đổi màu viền khi hover */
+}
+
+/* Input fields */
+.add input[type="text"],
+.add input[type="number"],
+.add textarea,
+.add select {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    transition: border-color 0.3s ease;
+}
+
+.add input[type="text"]:focus,
+.add input[type="number"]:focus,
+.add textarea:focus,
+.add select:focus {
+    border-color: #007bff; /* Đổi màu viền khi focus */
+    outline: none;
+}
+
+/* Labels and descriptions */
+.add p {
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+/* Category and price container */
+.add-category-price {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.add-category,
+.add-price {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Submit button */
+.add-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-btn:hover {
+    background-color: #0056b3; /* Màu đậm hơn khi hover */
+}

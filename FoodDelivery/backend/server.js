@@ -2,22 +2,27 @@ import express from 'express';
 import cors from 'cors';
 import { connectDB } from './config/db.js';
 import foodRouter from './routes/foodRoute.js';
+import userRouter from './routes/userRoute.js';
+import 'dotenv/config.js';
 
-//app configuration
+// App configuration
 const app = express();
 const PORT = 4000;
 
-//middleware
+// Middleware
 app.use(express.json());
 app.use(cors());
 
-// db connection
-connectDB();
+// DB connection
+connectDB().catch((error) => {
+    console.error("Failed to connect to MongoDB:", error);
+    process.exit(1); // Thoát ứng dụng nếu kết nối thất bại
+});
 
-// api endpoints
-app.use('/api/food', foodRouter); // Fixed typo: changed 'foodRouterter' to 'foodRouter'
-app.use("/images",express.static("uploads")); // Serve static files from the 'uploads' directory
-
+// API endpoints
+app.use('/api/food', foodRouter);
+app.use("/images", express.static("uploads"));
+app.use("/api/user", userRouter);
 
 app.get("/", (req, res) => {
     res.send("API Working");
