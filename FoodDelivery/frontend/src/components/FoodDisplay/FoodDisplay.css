@@ -1,0 +1,154 @@
+/* CSS Variables */
+:root {
+    /* Colors */
+    --primary: #ff6600;
+    --primary-light: #ffb347;
+    --text-dark: #333333;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+    
+    /* Spacing */
+    --section-spacing: clamp(20px, 4vw, 30px);
+    --grid-gap: clamp(15px, 3vw, 30px);
+    --grid-row-gap: clamp(30px, 5vw, 50px);
+    
+    /* Typography */
+    --title-size: clamp(18px, 4vw, 24px);
+    --title-weight: 700;
+    --letter-spacing: 1px;
+    
+    /* Transitions */
+    --transition-normal: 0.3s ease;
+    
+    /* Shadows */
+    --shadow-hover: 0 8px 24px var(--shadow-color);
+    
+    /* Border Radius */
+    --radius-sm: 2px;
+}
+
+/* Animation Keyframes */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Food Display Container */
+.food-display {
+    margin-top: var(--section-spacing);
+    padding: 0 clamp(10px, 2vw, 20px);
+    text-align: center;
+    animation: slideDown 0.8s ease;
+}
+
+/* Section Title */
+.food-display h2 {
+    font-size: var(--title-size);
+    font-weight: var(--title-weight);
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing);
+    margin-bottom: 20px;
+    position: relative;
+    display: inline-block;
+}
+
+/* Title Underline */
+.food-display h2::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: var(--gradient-primary);
+    margin: 10px auto 0;
+    border-radius: var(--radius-sm);
+    transition: width var(--transition-normal);
+}
+
+.food-display h2:hover::after {
+    width: 80px;
+}
+
+/* Food Grid Layout */
+.food-display-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--grid-gap);
+    row-gap: var(--grid-row-gap);
+    margin-top: var(--section-spacing);
+    padding: 0;
+    list-style: none;
+}
+
+/* Food Item Card */
+.food-display-item {
+    transition: transform var(--transition-normal),
+                box-shadow var(--transition-normal);
+    will-change: transform;
+    position: relative;
+}
+
+.food-display-item:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+}
+
+/* Loading State */
+.food-display.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Empty State */
+.food-display-empty {
+    text-align: center;
+    padding: var(--section-spacing);
+    color: var(--text-dark);
+    font-size: var(--title-size);
+}
+
+/* Media Queries */
+@media (max-width: 900px) {
+    .food-display-list {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .food-display-list {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+    
+    .food-display h2::after {
+        width: 40px;
+    }
+    
+    .food-display h2:hover::after {
+        width: 60px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .food-display {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .food-display-list {
+        display: block;
+    }
+    
+    .food-display-item {
+        page-break-inside: avoid;
+        margin-bottom: 20px;
+    }
+}

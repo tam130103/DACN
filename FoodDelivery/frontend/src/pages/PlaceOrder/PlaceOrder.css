@@ -1,0 +1,283 @@
+/* Import Google Fonts - ví dụ: Roboto và Open Sans */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
+
+.place-order {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 50px;
+    margin: 100px auto;
+    max-width: 1200px;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.place-order .title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 40px;
+    color: #333;
+    font-family: 'Roboto', sans-serif;
+}
+
+.place-order-left {
+    width: 100%;
+    max-width: 500px;
+}
+
+.place-order-left input {
+    margin-bottom: 15px; /* Giữ khoảng cách giữa các input độc lập */
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    outline: none;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.place-order-left input:focus {
+    border-color: tomato;
+}
+
+.place-order .multi-fields {
+    display: flex;
+    gap: 15px; /* Khoảng cách giữa các input trong cùng một hàng */
+    margin-bottom: 15px; /* Thêm margin-bottom cho cả nhóm multi-fields */
+}
+
+.place-order .multi-fields input {
+    flex: 1;
+    margin-bottom: 0; /* Bỏ margin-bottom ở đây vì đã có trên multi-fields */
+}
+
+.place-order-right {
+    width: 100%;
+    max-width: 400px;
+}
+
+.cart-total {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 25px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    background-color: #f9f9f9;
+}
+
+.cart-total h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #333;
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+}
+
+.cart-total-details {
+    display: flex;
+    justify-content: space-between;
+    color: #555;
+    font-size: 16px;
+}
+
+.cart-total hr {
+    margin: 15px 0;
+    border: none;
+    border-top: 1px dashed #e0e0e0;
+}
+
+.cart-total-details b {
+    color: #000;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.place-order .payment-button {
+    background-color: tomato;
+    color: white;
+    font-size: 19px;
+    font-weight: 600;
+    padding: 14px 0;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 25px;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    font-family: 'Roboto', sans-serif;
+}
+
+.place-order .payment-button:hover {
+    background-color: #ff6347;
+    transform: translateY(-2px);
+}
+
+.place-order .payment-button:active {
+    transform: translateY(0);
+}
+
+.place-order .payment-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none;
+}
+
+.place-order .payment-button.loading {
+    background-color: #f0f0f0;
+    color: #333;
+    cursor: not-allowed;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+}
+
+.error-message {
+    background-color: #ffebe9;
+    color: #cc0000;
+    border: 1px solid #ffbbbb;
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: 'Open Sans', sans-serif;
+}
+
+
+/* Responsive Design - Media Queries */
+
+/* Cho màn hình từ 900px trở xuống */
+@media (max-width: 900px) {
+    .place-order {
+        gap: 30px;
+        margin: 80px auto;
+        padding: 15px;
+    }
+
+    .place-order .title {
+        font-size: 26px;
+        margin-bottom: 35px;
+    }
+
+    .place-order-left,
+    .place-order-right {
+        max-width: 48%; /* Tăng nhẹ chiều rộng để chia đều hơn */
+    }
+
+    .place-order-left input {
+        padding: 10px 12px;
+        font-size: 15px;
+    }
+
+    .cart-total h2 {
+        font-size: 22px;
+    }
+
+    .place-order .payment-button {
+        font-size: 17px;
+        padding: 12px 0;
+    }
+}
+
+
+/* Cho màn hình từ 768px trở xuống */
+@media (max-width: 768px) {
+    .place-order {
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+        margin: 50px auto;
+        padding: 15px;
+    }
+
+    .place-order-left,
+    .place-order-right {
+        max-width: 90%;
+        width: 100%;
+    }
+
+    .place-order .title {
+        font-size: 24px;
+        margin-bottom: 30px;
+    }
+
+    .place-order-left input {
+        margin-bottom: 10px;
+        padding: 10px 12px;
+    }
+
+    .place-order .multi-fields {
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 10px; /* Điều chỉnh margin-bottom cho multi-fields */
+    }
+
+    .place-order .payment-button {
+        font-size: 16px;
+        padding: 10px 0;
+    }
+}
+
+/* Cho màn hình từ 480px trở xuống (điện thoại nhỏ) */
+@media (max-width: 480px) {
+    .place-order {
+        padding: 10px;
+        margin: 30px auto;
+    }
+
+    .place-order-left,
+    .place-order-right {
+        max-width: 100%;
+        padding: 0 10px;
+    }
+
+    .place-order .title {
+        font-size: 20px;
+        margin-bottom: 25px;
+    }
+
+    .place-order-left input {
+        font-size: 14px;
+        padding: 8px 10px;
+    }
+
+    .cart-total {
+        padding: 20px;
+        gap: 15px;
+    }
+
+    .cart-total h2 {
+        font-size: 20px;
+    }
+
+    .cart-total-details {
+        font-size: 15px;
+    }
+
+    .cart-total-details b {
+        font-size: 17px;
+    }
+
+    .place-order .payment-button {
+        font-size: 15px;
+        padding: 10px 0;
+    }
+
+    .error-message {
+        font-size: 14px;
+        padding: 10px;
+    }
+}

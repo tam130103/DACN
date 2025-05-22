@@ -1,0 +1,45 @@
+/* Navbar container */
+.navbar {
+    display: flex;
+    justify-content: space-between; /* Căn đều hai bên */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    padding: 10px 5%; /* Thêm khoảng cách padding */
+    background-color: #f8f9fa; /* Màu nền nhẹ nhàng */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm hiệu ứng đổ bóng */
+}
+
+/* Logo styling */
+.navbar .logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: #007bff; /* Màu xanh nổi bật */
+    text-decoration: none; /* Loại bỏ gạch chân nếu là liên kết */
+    transition: color 0.3s ease;
+}
+
+.navbar .logo:hover {
+    color: #0056b3; /* Màu đậm hơn khi hover */
+}
+
+/* Profile image styling */
+.navbar .profile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Bo tròn hình ảnh */
+    overflow: hidden; /* Ẩn phần thừa nếu hình ảnh không tròn */
+    border: 2px solid #ddd; /* Đường viền nhẹ */
+    transition: border-color 0.3s ease;
+}
+
+.navbar .profile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Đảm bảo hình ảnh không bị méo */
+}
+
+.navbar .profile:hover {
+    border-color: #007bff; /* Đổi màu viền khi hover */
+}
