@@ -15,10 +15,10 @@ const Navbar = ({ setShowLogin }) => {
 
     // Menu items memoization
     const menuItems = useMemo(() => [
-        { name: 'home', label: 'Home' },
-        { name: 'menu', label: 'Menu' },
-        { name: 'mobile-app', label: 'Mobile app' },
-        { name: 'contact', label: 'Contact' }
+        { name: 'home', label: 'Trang chủ' },
+        { name: 'menu', label: 'Thực đơn' },
+        { name: 'mobile-app', label: 'Ứng dụng' },
+        { name: 'contact', label: 'Liên hệ' }
     ], []);
 
     // Section mapping memoization
@@ -82,7 +82,7 @@ const Navbar = ({ setShowLogin }) => {
     return (
         <div className={`navbar${scrolled ? " scrolled" : ""}`}>
             <Link to="/" onClick={() => setMenu('home')} className="navbar-logo">
-                <img src={assets?.logo} alt="Logo" className="logo" />
+                <img src={assets?.logo} alt="Logo" className="logo" /> {/* Giữ nguyên "Logo" hoặc đổi thành "Biểu trưng" tùy ý */}
             </Link>
 
             <nav className="navbar-menu">
@@ -98,28 +98,28 @@ const Navbar = ({ setShowLogin }) => {
             </nav>
 
             <div className="navbar-right">
-                <button className="icon-button" aria-label="Search">
-                    <img src={assets?.search_icon} alt="Search" />
+                <button className="icon-button" aria-label="Tìm kiếm">
+                    <img src={assets?.search_icon} alt="Tìm kiếm" />
                 </button>
 
                <Link to="/cart" className="navbar-search_icon">
-                    <img src={assets?.basket_icon} alt="Cart" />
+                    <img src={assets?.basket_icon} alt="Giỏ hàng" />
                     {getTotalCartAmount?.() > 0 && <div className="dot" />}
                      </Link>
                
 
                 {token ? (
                     <div className="navbar-profile">
-                        <img src={assets.profile_icon} alt="Profile" />
+                        <img src={assets.profile_icon} alt="Hồ sơ" />
                         <ul className="nav-profile-dropdown">
                             <li onClick={()=>navigate('/myorders')}>
-                                <img src={assets.bag_icon} alt="" />
-                                Orders
+                                <img src={assets.bag_icon} alt="Đơn hàng" />
+                                Đơn hàng
                             </li>
                             <hr />
                             <li onClick={handleLogout}>
-                                <img src={assets.logout_icon} alt="" />
-                                Logout
+                                <img src={assets.logout_icon} alt="Đăng xuất" />
+                                Đăng xuất
                             </li>
                         </ul>
                     </div>
@@ -128,7 +128,7 @@ const Navbar = ({ setShowLogin }) => {
                         onClick={() => setShowLogin?.(true)}
                         className="login-button"
                     >
-                        Sign in
+                        Đăng nhập
                     </button>
                 )}
             </div>

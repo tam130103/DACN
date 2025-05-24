@@ -47,7 +47,7 @@ const Add = ({url}) => {
             }
         } catch (error) {
             console.error('Error adding food item:', error);
-            alert('An error occurred while adding the food item.');
+            toast.error('Đã xảy ra lỗi khi thêm món ăn.'); // Thay alert bằng toast.error cho nhất quán
         }
     };
 
@@ -56,11 +56,11 @@ const Add = ({url}) => {
             <form className="flex-col" onSubmit={handleSubmit}>
                 {/* Upload Image */}
                 <div className="add-img-upload flex-col">
-                    <p>Upload image</p>
+                    <p>Tải ảnh lên</p>
                     <label htmlFor="image">
                         <img
                             src={image ? URL.createObjectURL(image) : assets.upload_area}
-                            alt="Upload preview"
+                            alt="Xem trước ảnh tải lên"
                         />
                     </label>
                     <input
@@ -74,11 +74,11 @@ const Add = ({url}) => {
 
                 {/* Product Name */}
                 <div className="add-product-name flex-col">
-                    <p>Product name</p>
+                    <p>Tên sản phẩm</p>
                     <input
                         type="text"
                         name="name"
-                        placeholder="Type here"
+                        placeholder="Nhập vào đây"
                         value={data.name}
                         onChange={onChangeHandler}
                         required
@@ -87,11 +87,11 @@ const Add = ({url}) => {
 
                 {/* Product Description */}
                 <div className="add-product-description flex-col">
-                    <p>Product description</p>
+                    <p>Mô tả sản phẩm</p>
                     <textarea
                         name="description"
                         rows="6"
-                        placeholder="Write content here"
+                        placeholder="Viết nội dung ở đây"
                         value={data.description}
                         onChange={onChangeHandler}
                         required
@@ -101,7 +101,7 @@ const Add = ({url}) => {
                 {/* Product Category and Price */}
                 <div className="add-category-price">
                     <div className="add-category flex-col">
-                        <p>Product category</p>
+                        <p>Danh mục sản phẩm</p>
                         <select
                             name="category"
                             value={data.category}
@@ -109,21 +109,21 @@ const Add = ({url}) => {
                             required
                         >
                             <option value="Salad">Salad</option>
-                            <option value="Rolls">Rolls</option>
-                            <option value="Deserts">Deserts</option>
-                            <option value="Sandwich">Sandwich</option>
-                            <option value="Cake">Cake</option>
-                            <option value="Pure Veg">Pure Veg</option>
-                            <option value="Pasta">Pasta</option>
-                            <option value="Noodles">Noodles</option>
+                            <option value="Rolls">Gỏi cuốn</option>
+                            <option value="Deserts">Tráng miệng</option>
+                            <option value="Sandwich">Bánh mì Sandwich</option>
+                            <option value="Cake">Bánh ngọt</option>
+                            <option value="Pure Veg">Món chay</option>
+                            <option value="Pasta">Mì Ý</option>
+                            <option value="Noodles">Mì</option>
                         </select>
                     </div>
                     <div className="add-price flex-col">
-                        <p>Product price</p>
+                        <p>Giá sản phẩm</p>
                         <input
                             type="number"
                             name="price"
-                            placeholder="Type here"
+                            placeholder="Nhập vào đây"
                             value={data.price}
                             onChange={onChangeHandler}
                             required
@@ -133,7 +133,7 @@ const Add = ({url}) => {
 
                 {/* Submit Button */}
                 <button type="submit" className="add-btn">
-                    Add
+                    Thêm
                 </button>
             </form>
         </div>

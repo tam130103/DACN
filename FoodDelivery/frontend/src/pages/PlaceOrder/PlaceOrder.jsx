@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const PlaceOrder = () => {
-  // THAY ĐỔI food_list THÀNH foodList ở đây
+  // Sử dụng foodList từ context
   const { getTotalCartAmount, token, foodList, cartItems, url, setCartItems } = useContext(StoreContext); // <-- Đã sửa
 
   const navigate = useNavigate(); // Khai báo useNavigate
@@ -53,7 +53,7 @@ const PlaceOrder = () => {
     setIsLoading(true);
     let orderItems = [];
 
-    // THÊM KIỂM TRA foodList Ở ĐÂY TRƯỚC KHI FOREACH
+    // KIỂM TRA foodList TRƯỚC KHI LẶP
     if (!foodList || !Array.isArray(foodList) || foodList.length === 0) {
       console.error("PlaceOrder.jsx: foodList is not available or empty when placing order.");
       setError("Dữ liệu món ăn chưa tải xong. Vui lòng thử lại.");
@@ -129,39 +129,39 @@ const PlaceOrder = () => {
     <form onSubmit={placeOrder} className="place-order">
       {error && <div className="error-message">{error}</div>}
       <div className="place-order-left">
-        <p className="title">Delivery info</p>
+        <p className="title">Thông tin giao hàng</p>
         <div className="muti-fields"> {/* Đã sửa chính tả: multi-fields */}
-          <input required name='firstName' onChange={onChangeHandler} value={data.firstName} type="text" placeholder='First name' />
-          <input required name='lastName' onChange={onChangeHandler} value={data.lastName} type="text" placeholder='Last name' />
+          <input required name='firstName' onChange={onChangeHandler} value={data.firstName} type="text" placeholder='Tên' />
+          <input required name='lastName' onChange={onChangeHandler} value={data.lastName} type="text" placeholder='Họ' />
         </div>
-        <input required name='email' onChange={onChangeHandler} value={data.email} type="email" placeholder='Email address' />
-        <input required name='street' onChange={onChangeHandler} value={data.street} type="text" placeholder='Street' />
+        <input required name='email' onChange={onChangeHandler} value={data.email} type="email" placeholder='Địa chỉ email' />
+        <input required name='street' onChange={onChangeHandler} value={data.street} type="text" placeholder='Đường/Phố' />
         <div className="muti-fields"> {/* Đã sửa chính tả: multi-fields */}
-          <input required name='city' onChange={onChangeHandler} value={data.city} type="text" placeholder='City' />
-          <input required name='state' onChange={onChangeHandler} value={data.state} type="text" placeholder='State' />
+          <input required name='city' onChange={onChangeHandler} value={data.city} type="text" placeholder='Thành phố' />
+          <input required name='state' onChange={onChangeHandler} value={data.state} type="text" placeholder='Tỉnh/Bang' />
         </div>
         <div className="muti-fields"> {/* Đã sửa chính tả: multi-fields */}
-          <input name='postalCode' onChange={onChangeHandler} value={data.postalCode} type="text" placeholder='Code' />
-          <input required name='country' onChange={onChangeHandler} value={data.country} type="text" placeholder='Country' />
+          <input name='postalCode' onChange={onChangeHandler} value={data.postalCode} type="text" placeholder='Mã bưu chính' />
+          <input required name='country' onChange={onChangeHandler} value={data.country} type="text" placeholder='Quốc gia' />
         </div>
-        <input required name='phone' onChange={onChangeHandler} value={data.phone} type="text" placeholder='Phone' />
+        <input required name='phone' onChange={onChangeHandler} value={data.phone} type="text" placeholder='Số điện thoại' />
       </div>
       <div className="place-order-right">
         <div className="cart-total">
-          <h2>Cart total</h2>
+          <h2>Tổng cộng giỏ hàng</h2>
           <div>
             <div className="cart-total-details">
-              <p>Subtotal</p>
+              <p>Tạm tính</p>
               <p>${currentSubtotal.toFixed(2)}</p> {/* Sử dụng currentSubtotal */}
             </div>
             <hr />
             <div className="cart-total-details">
-              <p>Delivery</p>
+              <p>Phí vận chuyển</p>
               <p>${displayDeliveryFee.toFixed(2)}</p> {/* Sử dụng displayDeliveryFee */}
             </div>
             <hr />
             <div className="cart-total-details">
-              <p>Total</p>
+              <p>Tổng thanh toán</p>
               <p>${displayTotalAmount.toFixed(2)}</p> {/* Sử dụng displayTotalAmount */}
             </div>
           </div>

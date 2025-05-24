@@ -7,7 +7,7 @@ import axios from 'axios';
 const LoginPopup = ({ setShowLogin }) => {
     const { url, setToken } = useContext(StoreContext);
 
-    const [currState, setCurrState] = useState("Login");
+    const [currState, setCurrState] = useState("Đăng nhập"); // Changed initial state to Vietnamese
     const [data, setData] = useState({
         name: "",
         email: "",
@@ -25,10 +25,10 @@ const LoginPopup = ({ setShowLogin }) => {
         event.preventDefault();
         try {
             let newUrl = url;
-            if (currState === "Login") {
+            if (currState === "Đăng nhập") { // Check against Vietnamese state
                 newUrl += "/api/user/login";
             } else {
-                newUrl += "/api/user/register";
+                newUrl += "/api/user/register"; // "Sign up" state will be "Đăng ký"
             }
 
             const response = await axios.post(newUrl, data);
@@ -41,7 +41,7 @@ const LoginPopup = ({ setShowLogin }) => {
             }
         } catch (error) {
             console.error("Error during login/register:", error);
-            alert("An error occurred. Please try again.");
+            alert("Đã có lỗi xảy ra. Vui lòng thử lại.");
         }
     };
 
@@ -53,17 +53,17 @@ const LoginPopup = ({ setShowLogin }) => {
                     <img
                         onClick={() => setShowLogin?.(false)}
                         src={assets?.cross_icon || ""}
-                        alt="Close"
+                        alt="Đóng"
                     />
                 </div>
                 <div className="login-popup-inputs">
-                    {currState === "Sign up" && (
+                    {currState === "Đăng ký" && ( // Check against Vietnamese state
                         <input
                             name="name"
                             onChange={onChangeHandle}
                             value={data.name}
                             type="text"
-                            placeholder="Your name"
+                            placeholder="Tên của bạn"
                             required
                         />
                     )}
@@ -72,7 +72,7 @@ const LoginPopup = ({ setShowLogin }) => {
                         onChange={onChangeHandle}
                         value={data.email}
                         type="email"
-                        placeholder="Your email"
+                        placeholder="Email của bạn"
                         required
                     />
                     <input
@@ -80,29 +80,29 @@ const LoginPopup = ({ setShowLogin }) => {
                         onChange={onChangeHandle}
                         value={data.password}
                         type="password"
-                        placeholder="Password"
+                        placeholder="Mật khẩu"
                         required
                     />
                 </div>
                 <button type="submit">
-                    {currState === "Sign up" ? "Create account" : "Login"}
+                    {currState === "Đăng ký" ? "Tạo tài khoản" : "Đăng nhập"}
                 </button>
                 <div className="login-popup-condition">
                     <input type="checkbox" required />
-                    <p>By continuing, you agree to our Terms and Conditions.</p>
+                    <p>Bằng việc tiếp tục, bạn đồng ý với các Điều khoản và Điều kiện của chúng tôi.</p>
                 </div>
-                {currState === "Login" ? (
+                {currState === "Đăng nhập" ? ( // Check against Vietnamese state
                     <p>
-                        Create new account?{" "}
-                        <span onClick={() => setCurrState("Sign up")}>
-                            Click here
+                        Tạo tài khoản mới?{" "}
+                        <span onClick={() => setCurrState("Đăng ký")}>
+                            Nhấn vào đây
                         </span>
                     </p>
                 ) : (
                     <p>
-                        Already have an account?{" "}
-                        <span onClick={() => setCurrState("Login")}>
-                            Click here
+                        Đã có tài khoản?{" "}
+                        <span onClick={() => setCurrState("Đăng nhập")}>
+                            Nhấn vào đây
                         </span>
                     </p>
                 )}

@@ -12,8 +12,8 @@ const FoodDisplay = ({category}) => {
     if (!foodList || !Array.isArray(foodList) || foodList.length === 0) {
         return (
             <div className="food-display" id="food-display">
-                <h2>Top dishes near you</h2> {/* Đã sửa chính tả "u" thành "you" */}
-                <p>Loading dishes... or no dishes found.</p>
+                <h2>Món ngon gần bạn</h2>
+                <p>Đang tải món ăn... hoặc không tìm thấy món ăn nào.</p>
                 {/* Bạn có thể thêm spinner hoặc thông báo tải ở đây */}
             </div>
         );
@@ -21,7 +21,7 @@ const FoodDisplay = ({category}) => {
 
   return (
     <div className='food-display' id='food-display'>
-      <h2>Top dishes near you</h2> {/* Đã sửa chính tả "u" thành "you" */}
+      <h2>Món ngon gần bạn</h2>
       <div className="food-display-list">
         {foodList.map((item,index)=>{ // <-- Sử dụng foodList đã sửa
             // Thêm kiểm tra item để đảm bảo item không bị undefined/null

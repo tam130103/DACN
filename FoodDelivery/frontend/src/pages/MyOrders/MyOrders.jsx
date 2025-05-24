@@ -20,12 +20,12 @@ const MyOrders = () => {
       if (response.data.success) {
         setData(response.data.data);
       } else {
-        setError(response.data.message || "Failed to fetch orders.");
-        console.error("API error fetching orders:", response.data.message);
+        setError(response.data.message || "Không thể tải đơn hàng.");
+        console.error("Lỗi API khi tải đơn hàng:", response.data.message);
       }
     } catch (err) {
       setError("Không thể tải đơn hàng. Vui lòng thử lại sau.");
-      console.error("Network or server error fetching orders:", err);
+      console.error("Lỗi mạng hoặc máy chủ khi tải đơn hàng:", err);
     } finally {
       setLoading(false); // Kết thúc tải, đặt loading thành false
     }
@@ -37,7 +37,7 @@ const MyOrders = () => {
     } else {
       // Nếu không có token, bạn có thể chuyển hướng hoặc hiển thị thông báo
       // navigate('/login'); // Ví dụ: chuyển hướng về trang đăng nhập
-      console.warn("No token available to fetch orders.");
+      console.warn("Không có token để tải đơn hàng.");
       setLoading(false); // Dừng loading nếu không có token để fetch
     }
   }, [token]); // Dependency array: fetch lại khi token thay đổi
@@ -70,10 +70,10 @@ const MyOrders = () => {
                     );
                   })}
                 </p>
-                <p>${order.amount}.00</p> {/* Hiển thị tổng tiền đơn hàng, thêm định dạng nếu cần */}
+                <p>${order.amount.toLocaleString('vi-VN')}.00</p> {/* Hiển thị tổng tiền đơn hàng, thêm định dạng nếu cần */}
                 <p>Mặt hàng: {order.items.length}</p> {/* Tổng số loại mặt hàng */}
                 <p><span>&#x25CF;</span> <b>{order.status}</b></p> {/* Trạng thái đơn hàng */}
-                <button onClick={fetchOrders}>Theo dõi đơn hàng</button> {/* Nút theo dõi (có thể thêm logic sau) */}
+                <button onClick={fetchOrders}>Cập nhật đơn hàng</button> {/* Nút theo dõi/cập nhật (có thể thêm logic sau) */}
               </div>
             );
           })

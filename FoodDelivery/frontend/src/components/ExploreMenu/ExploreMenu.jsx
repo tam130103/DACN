@@ -6,13 +6,13 @@ const ExploreMenu = ({category,setCategory}) => {
 
   return (
     <div className='explore-menu' id='explore-menu'>
-      <h1>Explore our menu</h1>
-      <p className='explore-menu-test'>...</p>
+      <h1>Khám phá thực đơn của chúng tôi</h1>
+      <p className='explore-menu-test'>Chọn từ một loạt các món ăn ngon được chế biến từ những nguyên liệu tươi ngon nhất.</p>
       <div className="explore-menu-list">
         {menu_list.map((item,index)=>{
             return (
                 <div onClick={()=>setCategory(prev=>prev===item.menu_name?"All":item.menu_name)} key = {index} className="explore-menu-list-item">
-                    <img className={category===item.menu_name?"active":""} src={item.menu_image} alt="" />
+                    <img className={category===item.menu_name?"active":""} src={item.menu_image} alt={item.menu_name} />
                     <p>{item.menu_name}</p>
                 </div>
             )

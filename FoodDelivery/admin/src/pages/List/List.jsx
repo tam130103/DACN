@@ -12,11 +12,11 @@ const List = ({url}) => {
       if (response.data.success) {
         setList(response.data.data);
       } else {
-        toast.error('Error fetching data');
+        toast.error('Lỗi tải dữ liệu');
       }
     } catch (error) {
       console.error('Error fetching list:', error);
-      toast.error('Failed to fetch data. Please try again later.');
+      toast.error('Không thể tải dữ liệu. Vui lòng thử lại sau.');
     }
   };
 
@@ -24,14 +24,14 @@ const List = ({url}) => {
     try {
       const response = await axios.post(`${url}/api/food/remove`, { id });
       if (response.data.success) {
-        toast.success('Food deleted successfully');
+        toast.success('Xóa món ăn thành công');
         fetchList(); // Cập nhật danh sách sau khi xóa
       } else {
-        toast.error('Failed to delete item');
+        toast.error('Không thể xóa mục');
       }
     } catch (error) {
       console.error('Error deleting item:', error);
-      toast.error('An error occurred while deleting the item.');
+      toast.error('Đã xảy ra lỗi khi xóa mục.');
     }
   };
 
@@ -43,19 +43,19 @@ const List = ({url}) => {
     <div className="list add flex-col">
       <div className="list-table">
         <div className="list-table-format title">
-          <b>Image</b>
-          <b>Name</b>
-          <b>Category</b>
-          <b>Price</b>
-          <b>Action</b>
+          <b>Hình ảnh</b>
+          <b>Tên</b>
+          <b>Danh mục</b>
+          <b>Giá</b>
+          <b>Hành động</b>
         </div>
         {list.map((item, index) => (
           <div key={index} className="list-table-format">
             <img src={`${url}/images/${item.image}`} alt={item.name} />
             <p>{item.name}</p>
             <p>{item.category}</p>
-            <p>${item.price}</p>
-            <button onClick={() => deleteItem(item._id)}>Delete</button>
+            <p>${item.price.toLocaleString('vi-VN')}</p> {/* Thêm định dạng tiền tệ Việt Nam */}
+            <button onClick={() => deleteItem(item._id)}>Xóa</button>
           </div>
         ))}
       </div>

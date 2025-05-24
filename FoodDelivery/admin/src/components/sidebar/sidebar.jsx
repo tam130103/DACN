@@ -12,8 +12,8 @@ const Sidebar = () => {
         className="sidebar-option"
         activeClassName="active"
       >
-        <img src={assets.add_icon} alt="Add Icon" />
-        <p>Add items</p>
+        <img src={assets.add_icon} alt="Biểu tượng thêm" />
+        <p>Thêm mục</p>
       </NavLink>
 
       {/* List Items */}
@@ -22,8 +22,8 @@ const Sidebar = () => {
         className="sidebar-option"
         activeClassName="active"
       >
-        <img src={assets.order_icon} alt="List Icon" />
-        <p>List items</p>
+        <img src={assets.order_icon} alt="Biểu tượng danh sách" />
+        <p>Danh sách mục</p>
       </NavLink>
 
       {/* Orders */}
@@ -32,8 +32,8 @@ const Sidebar = () => {
         className="sidebar-option"
         activeClassName="active"
       >
-        <img src={assets.order_icon} alt="Order Icon" />
-        <p>Orders</p>
+        <img src={assets.order_icon} alt="Biểu tượng đơn hàng" />
+        <p>Đơn hàng</p>
       </NavLink>
     </div>
   );

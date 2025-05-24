@@ -6,25 +6,25 @@ const Footer = () => {
     <div className='footer' id='footer'>
         <div className="footer-content">
             <div className="footer-content-left">
-                <img src={assets.logo} alt="" />
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque debitis dicta repellendus nesciunt eveniet corrupti nostrum vero tempora perspiciatis quod impedit, itaque, quisquam ad ex, eius voluptate reiciendis facilis hic!</p>
+                <img src={assets.logo} alt="Logo Công ty" />
+                <p>Chúng tôi tận tâm mang đến những bữa ăn ngon nhất, được chế biến từ nguyên liệu tươi sạch và giao đến tận cửa nhà bạn. Sứ mệnh của chúng tôi là làm cho mỗi bữa ăn của bạn trở nên đặc biệt.</p>
                 <div className="footer-social-icon">
-                    <img src={assets.facebook_icon} alt="" />
-                    <img src={assets.twitter_icon} alt="" />
-                    <img src={assets.linkedin_icon} alt="" />
+                    <img src={assets.facebook_icon} alt="Facebook" />
+                    <img src={assets.twitter_icon} alt="Twitter" />
+                    <img src={assets.linkedin_icon} alt="LinkedIn" />
                 </div>
             </div>
             <div className="footer-content-center">
-                <h2>COMPANY</h2>
+                <h2>CÔNG TY</h2>
                 <ul>
-                    <li>Home</li>
-                    <li>About us</li>
-                    <li>Delivery</li>
-                    <li>Privacy police</li>
+                    <li>Trang chủ</li>
+                    <li>Về chúng tôi</li>
+                    <li>Giao hàng</li>
+                    <li>Chính sách bảo mật</li>
                 </ul>
             </div>
             <div className="footer-content-right">
-                <h2>GET IN TOUCH</h2>
+                <h2>LIÊN HỆ</h2>
                 <ul>
                     <li>123456789</li>
                     <li>tam@gmail.com</li>
@@ -32,7 +32,7 @@ const Footer = () => {
             </div>
         </div>
         <hr />
-        <p className="footer-copyright">...</p>
+        <p className="footer-copyright">Bản quyền © 2024 Tomato.com - Đã đăng ký Bản quyền.</p>
     </div>
   )
 }
