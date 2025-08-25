@@ -63,10 +63,10 @@ useEffect(()=>{
             <p>Số món: {order.items.length}</p>
             <p>${order.amount}</p>
             <select onChange={(event)=>statusHandler(event,order._id)} value={order.status}>
-              <option value="Food Processing">Đang xử lý món</option>
-              <option value="Out for delivery">Đang giao hàng</option>
-              <option value="Delivered">Đã giao</option>
-              <option value="Cancelled">Đã hủy</option>
+              <option value="Đang xử lý món">Đang xử lý món</option>
+              <option value="Đang giao hàng">Đang giao hàng</option>
+              <option value="Đã giao">Đã giao</option>
+              <option value="Đã hủy">Đã hủy</option>
             </select>
           </div>
         ))}

@@ -27,8 +27,8 @@ const orderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["Food processing", "Out for delivery", "Delivered", "Cancelled"],
-        default: "Food processing",
+        enum: ["Đang xử lý món", "Đang giao hàng", "Đã giao", "Đã hủy"],
+        default: "Đang xử lý món",
     },
     date: { type: Date, default: Date.now },
     payment: { type: Boolean, default: false },
