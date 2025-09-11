@@ -18,7 +18,13 @@ const MyOrders = () => {
       // Đảm bảo request body trống rỗng được gửi đúng cách nếu backend yêu cầu
       const response = await axios.post(url + "/api/order/userorders", {}, { headers: { token } });
       if (response.data.success) {
-        setData(response.data.data);
+        // --- BƯỚC KIỂM TRA DỮ LIỆU ---
+        console.log("Dữ liệu đơn hàng đầu tiên từ API:", response.data.data[0]);
+        // -----------------------------
+
+        // Sắp xếp các đơn hàng, đưa đơn hàng mới nhất lên đầu bằng cách sử dụng trường 'date'
+        const sortedData = response.data.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+        setData(sortedData);
       } else {
         setError(response.data.message || "Không thể tải đơn hàng.");
         console.error("Lỗi API khi tải đơn hàng:", response.data.message);
