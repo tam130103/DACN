@@ -3,6 +3,7 @@ import './FoodDisplay.css'
 import { StoreContext } from '../../context/StoreContext'
 import FoodItem from '../FoodItem/FoodItem'
 
+
 const FoodDisplay = ({category}) => {
 
     // THAY ĐỔI TÊN BIẾN TỪ food_list THÀNH foodList
