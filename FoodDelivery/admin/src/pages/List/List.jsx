@@ -1,37 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import './List.css';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+// FoodDelivery/admin/src/pages/List/List.jsx
+import React, { useState, useEffect } from "react";
+import "./List.css";
+import { api } from "../../api/client"; // dùng axios instance
+import { toast } from "react-toastify";
 
-const List = ({url}) => {
+const List = () => {
   const [list, setList] = useState([]);
 
   const fetchList = async () => {
     try {
-      const response = await axios.get(`${url}/api/food/list`);
-      if (response.data.success) {
-        setList(response.data.data);
+      const res = await api.get("/api/food/list");
+      if (res.data.success) {
+        setList(res.data.data);
       } else {
-        toast.error('Lỗi tải dữ liệu');
+        toast.error(res.data.message || "Lỗi tải dữ liệu");
       }
-    } catch (error) {
-      console.error('Error fetching list:', error);
-      toast.error('Không thể tải dữ liệu. Vui lòng thử lại sau.');
+    } catch (err) {
+      console.error("Error fetching list:", err?.response?.data || err.message);
+      toast.error("Không thể tải dữ liệu. Vui lòng thử lại sau.");
     }
   };
 
   const deleteItem = async (id) => {
     try {
-      const response = await axios.post(`${url}/api/food/remove`, { id });
-      if (response.data.success) {
-        toast.success('Xóa món ăn thành công');
-        fetchList(); // Cập nhật danh sách sau khi xóa
+      const res = await api.post("/api/food/remove", { id });
+      if (res.data.success) {
+        toast.success("Xóa món ăn thành công");
+        fetchList(); // reload danh sách
       } else {
-        toast.error('Không thể xóa mục');
+        toast.error(res.data.message || "Không thể xóa món ăn");
       }
-    } catch (error) {
-      console.error('Error deleting item:', error);
-      toast.error('Đã xảy ra lỗi khi xóa mục.');
+    } catch (err) {
+      console.error("Error deleting item:", err?.response?.data || err.message);
+      toast.error("Đã xảy ra lỗi khi xóa món ăn.");
     }
   };
 
@@ -49,12 +50,18 @@ const List = ({url}) => {
           <b>Giá</b>
           <b>Hành động</b>
         </div>
-        {list.map((item, index) => (
-          <div key={index} className="list-table-format">
-            <img src={`${url}/images/${item.image}`} alt={item.name} />
+
+        {list.map((item) => (
+          <div key={item._id} className="list-table-format">
+            <img src={`${api.defaults.baseURL}/images/${item.image}`} alt={item.name} />
             <p>{item.name}</p>
             <p>{item.category}</p>
-            <p>${item.price.toLocaleString('vi-VN')}</p> {/* Thêm định dạng tiền tệ Việt Nam */}
+            <p>
+              {item.price.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </p>
             <button onClick={() => deleteItem(item._id)}>Xóa</button>
           </div>
         ))}
