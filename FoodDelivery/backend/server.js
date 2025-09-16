@@ -12,63 +12,55 @@ import orderRouter from './routes/orderRoute.js';
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-/* -------------------- CORS (so sánh theo hostname) -------------------- */
-// Cho phép các origin cụ thể + mọi preview *.vercel.app
-const RAW_ALLOWED = [
-  process.env.FRONTEND_URL,     // ví dụ: https://dacn-three.vercel.app
-  process.env.ADMIN_URL,        // ví dụ: https://dacn-rfwb.vercel.app
-  process.env.FRONTEND_URL_ALT, // tùy chọn
-  'http://localhost:5173',      // Vite dev
-  'http://localhost:3000',      // CRA dev
-].filter(Boolean);
-
-// Rút thành tập hostnames (không phụ thuộc http/https hay dấu '/')
-const ALLOWED_HOSTS = RAW_ALLOWED.reduce((set, u) => {
-  try { set.add(new URL(u).hostname); } catch {}
-  return set;
-}, new Set());
-
-const isVercelHost = (hostname) => /\.vercel\.app$/i.test(hostname);
-
-const corsOptions = {
-  origin(origin, cb) {
-    // Cho phép request không có origin (Postman/cURL/healthz)
+// ========== CORS ==========
+const corsMw = cors({
+  origin: (origin, cb) => {
+    // Cho phép request không có Origin (Postman/cURL, healthz, browser preload)
     if (!origin) return cb(null, true);
-    try {
-      const { hostname } = new URL(origin);
-      const ok = ALLOWED_HOSTS.has(hostname) || isVercelHost(hostname);
-      return ok ? cb(null, true) : cb(new Error(`CORS blocked: ${origin}`), false);
-    } catch {
-      return cb(new Error(`CORS invalid origin: ${origin}`), false);
-    }
+
+    // Cho phép tất cả origin (debug / deploy public)
+    // 👉 Nếu muốn siết lại: thay vì cb(null,true), chỉ cho phép những domain cụ thể
+    // như FRONTEND_URL và ADMIN_URL từ .env
+    return cb(null, true);
   },
   credentials: true,
-};
+  methods: ['GET','POST','PUT','DELETE','PATCH','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization'],
+  maxAge: 86400,
+});
 
-app.use(cors(corsOptions));
-// ⚠️ Express 5: KHÔNG dùng '*' nữa (gây lỗi path-to-regexp). Dùng '(.*)' hoặc '/*' nếu cần.
-app.options('(.*)', cors(corsOptions)); // xử lý preflight cho mọi path
+app.use(corsMw);
+// Express v5 dùng (.*) thay vì '*'
+app.options('(.*)', corsMw);
 
-/* -------------------- Body & static -------------------- */
+// ========== Middleware ==========
 app.use(express.json());
-app.use('/images', express.static('uploads', { maxAge: '1d', etag: true }));
 
-/* -------------------- Health check -------------------- */
+// phục vụ file ảnh upload
+app.use(
+  '/images',
+  express.static('uploads', {
+    maxAge: '1d',
+    etag: true,
+  })
+);
+
+// ========== Health check ==========
 app.get('/healthz', (_, res) => res.status(200).send('ok'));
-app.get('/',       (_, res) => res.send('API Working'));
+app.get('/', (_, res) => res.send('API Working'));
 
-/* -------------------- Routes sau khi DB sẵn sàng -------------------- */
+// ========== Start server ==========
 (async () => {
   try {
-    await connectDB(); // dùng đúng ENV (ví dụ: MONGODB_URL)
+    await connectDB();
     console.log('✅ Mongo connected');
 
-    app.use('/api/food',  foodRouter);
-    app.use('/api/user',  userRouter);
-    app.use('/api/cart',  cartRouter);
+    // Routes
+    app.use('/api/food', foodRouter);
+    app.use('/api/user', userRouter);
+    app.use('/api/cart', cartRouter);
     app.use('/api/order', orderRouter);
 
-    // Quan trọng với Render: bind 0.0.0.0
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server running at http://0.0.0.0:${PORT}`);
     });
