@@ -11,44 +11,36 @@ import orderRouter from './routes/orderRoute.js';
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// ---- CORS (mở để debug) ----
+// CORS (tạm mở để chắc chắn khởi động OK; siết lại sau)
 const corsMw = cors({
-  origin: (origin, cb) => {
-    if (!origin) return cb(null, true);       // Postman/healthz…
-    return cb(null, true);                    // mở tất cả origin
-  },
+  origin: (_origin, cb) => cb(null, true),
   credentials: true,
   methods: ['GET','POST','PUT','DELETE','PATCH','OPTIONS'],
   allowedHeaders: ['Content-Type','Authorization'],
   maxAge: 86400,
 });
-
 app.use(corsMw);
-// ❌ app.options('(.*)', corsMw);
-app.options('*', corsMw);                     // ✅ Express 5 chấp nhận
+app.options(/.*/, corsMw);                  // ✅ thay vì '*' hoặc '(.*)'
 
-// ---- Body & Static ----
 app.use(express.json());
 app.use('/images', express.static('uploads', { maxAge: '1d', etag: true }));
 
-// ---- Health ----
 app.get('/healthz', (_, res) => res.status(200).send('ok'));
-app.get('/', (_, res) => res.send('API Working'));
+app.get('/',      (_, res) => res.send('API Working'));
 
-// ---- Start ----
 (async () => {
   try {
     await connectDB();
     console.log('✅ Mongo connected');
 
-    app.use('/api/food', foodRouter);
-    app.use('/api/user', userRouter);
-    app.use('/api/cart', cartRouter);
+    app.use('/api/food',  foodRouter);
+    app.use('/api/user',  userRouter);
+    app.use('/api/cart',  cartRouter);
     app.use('/api/order', orderRouter);
 
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log(`🚀 Server running at http://0.0.0.0:${PORT}`);
-    });
+    app.listen(PORT, '0.0.0.0', () =>
+      console.log(`🚀 Server running at http://0.0.0.0:${PORT}`)
+    );
   } catch (err) {
     console.error('❌ Failed to connect to MongoDB:', err?.message || err);
     process.exit(1);
