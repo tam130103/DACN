@@ -1,6 +1,7 @@
 import React from 'react'
 import './Footer.css'
 import { assets } from '../../assets/assets'
+import { Link } from 'react-router-dom'
 const Footer = () => {
   return (
     <div className='footer' id='footer'>
@@ -27,12 +28,12 @@ const Footer = () => {
                 <h2>LIÊN HỆ</h2>
                 <ul>
                     <li>123456789</li>
-                    <li>tam@gmail.com</li>
+                    <li>thetam2103@gmail.com</li>
                 </ul>
             </div>
         </div>
         <hr />
-        <p className="footer-copyright">Bản quyền © 2024 Tomato.com - Đã đăng ký Bản quyền.</p>
+        <p className="footer-copyright">Bản quyền © 2025 tam.com - Đã đăng ký Bản quyền.</p>
     </div>
   )
 }
