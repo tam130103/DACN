@@ -1,4 +1,3 @@
-// FoodDelivery/backend/server.js
 import express from 'express';
 import cors from 'cors';
 import 'dotenv/config.js';
@@ -12,16 +11,11 @@ import orderRouter from './routes/orderRoute.js';
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// ========== CORS ==========
+// ---- CORS (mở để debug) ----
 const corsMw = cors({
   origin: (origin, cb) => {
-    // Cho phép request không có Origin (Postman/cURL, healthz, browser preload)
-    if (!origin) return cb(null, true);
-
-    // Cho phép tất cả origin (debug / deploy public)
-    // 👉 Nếu muốn siết lại: thay vì cb(null,true), chỉ cho phép những domain cụ thể
-    // như FRONTEND_URL và ADMIN_URL từ .env
-    return cb(null, true);
+    if (!origin) return cb(null, true);       // Postman/healthz…
+    return cb(null, true);                    // mở tất cả origin
   },
   credentials: true,
   methods: ['GET','POST','PUT','DELETE','PATCH','OPTIONS'],
@@ -30,32 +24,23 @@ const corsMw = cors({
 });
 
 app.use(corsMw);
-// Express v5 dùng (.*) thay vì '*'
-app.options('(.*)', corsMw);
+// ❌ app.options('(.*)', corsMw);
+app.options('*', corsMw);                     // ✅ Express 5 chấp nhận
 
-// ========== Middleware ==========
+// ---- Body & Static ----
 app.use(express.json());
+app.use('/images', express.static('uploads', { maxAge: '1d', etag: true }));
 
-// phục vụ file ảnh upload
-app.use(
-  '/images',
-  express.static('uploads', {
-    maxAge: '1d',
-    etag: true,
-  })
-);
-
-// ========== Health check ==========
+// ---- Health ----
 app.get('/healthz', (_, res) => res.status(200).send('ok'));
 app.get('/', (_, res) => res.send('API Working'));
 
-// ========== Start server ==========
+// ---- Start ----
 (async () => {
   try {
     await connectDB();
     console.log('✅ Mongo connected');
 
-    // Routes
     app.use('/api/food', foodRouter);
     app.use('/api/user', userRouter);
     app.use('/api/cart', cartRouter);
