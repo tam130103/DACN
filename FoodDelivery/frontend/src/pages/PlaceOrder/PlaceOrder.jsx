@@ -55,14 +55,12 @@ const PlaceOrder = () => {
 
     setIsLoading(true);
 
-    // Bảo vệ khi foodList chưa sẵn sàng
     if (!Array.isArray(foodList) || foodList.length === 0) {
       setError("Dữ liệu món ăn chưa tải xong. Vui lòng thử lại.");
       setIsLoading(false);
       return;
     }
 
-    // Tạo danh sách item từ cartItems
     const orderItems = foodList
       .filter((it) => cartItems?.[it?._id] > 0)
       .map((it) => ({
@@ -86,22 +84,20 @@ const PlaceOrder = () => {
     const orderData = {
       address: data,
       items: orderItems,
-      amount, // nếu backend dùng Stripe theo đơn vị cents thì backend sẽ tự quy đổi
+      amount,
     };
 
     try {
       const res = await api.post("/api/order/place", orderData, {
-        headers: { token },
+        headers: { token }, // hoặc Authorization: `Bearer ${token}` nếu backend dùng chuẩn Bearer
       });
 
       if (res.data?.success) {
-        // Nếu backend trả về session_url (Stripe Checkout)
         if (res.data.session_url) {
           setCartItems({});
           window.location.replace(res.data.session_url);
           return;
         }
-        // Hoặc chuyển tới trang "đơn hàng của tôi" khi không dùng Stripe
         setCartItems({});
         navigate("/myorders");
       } else {
@@ -115,9 +111,12 @@ const PlaceOrder = () => {
     }
   };
 
-  // Nếu giỏ hàng rỗng (sau khi data đã tải) thì quay về Cart
   useEffect(() => {
-    if (Array.isArray(foodList) && foodList.length > 0 && (getTotalCartAmount?.() || 0) === 0) {
+    if (
+      Array.isArray(foodList) &&
+      foodList.length > 0 &&
+      (getTotalCartAmount?.() || 0) === 0
+    ) {
       navigate("/cart");
     }
   }, [foodList, getTotalCartAmount, navigate]);
@@ -125,7 +124,8 @@ const PlaceOrder = () => {
   const DELIVERY_FEE = 2;
   const currentSubtotal = Number(getTotalCartAmount?.() || 0);
   const displayDeliveryFee = currentSubtotal > 0 ? DELIVERY_FEE : 0;
-  const displayTotalAmount = currentSubtotal > 0 ? currentSubtotal + DELIVERY_FEE : 0;
+  const displayTotalAmount =
+    currentSubtotal > 0 ? currentSubtotal + DELIVERY_FEE : 0;
 
   return (
     <form onSubmit={placeOrder} className="place-order">
@@ -135,24 +135,86 @@ const PlaceOrder = () => {
         <p className="title">Thông tin giao hàng</p>
 
         <div className="muti-fields">
-          <input required name="firstName" value={data.firstName} onChange={onChangeHandler} type="text" placeholder="Tên" />
-          <input required name="lastName" value={data.lastName} onChange={onChangeHandler} type="text" placeholder="Họ" />
+          <input
+            required
+            name="firstName"
+            value={data.firstName}
+            onChange={onChangeHandler}
+            type="text"
+            placeholder="Tên"
+          />
+          <input
+            required
+            name="lastName"
+            value={data.lastName}
+            onChange={onChangeHandler}
+            type="text"
+            placeholder="Họ"
+          />
         </div>
 
-        <input required name="email" value={data.email} onChange={onChangeHandler} type="email" placeholder="Địa chỉ email" />
-        <input required name="street" value={data.street} onChange={onChangeHandler} type="text" placeholder="Đường/Phố" />
+        <input
+          required
+          name="email"
+          value={data.email}
+          onChange={onChangeHandler}
+          type="email"
+          placeholder="Địa chỉ email"
+        />
+        <input
+          required
+          name="street"
+          value={data.street}
+          onChange={onChangeHandler}
+          type="text"
+          placeholder="Đường/Phố"
+        />
 
         <div className="muti-fields">
-          <input required name="city" value={data.city} onChange={onChangeHandler} type="text" placeholder="Thành phố" />
-          <input required name="state" value={data.state} onChange={onChangeHandler} type="text" placeholder="Tỉnh/Bang" />
+          <input
+            required
+            name="city"
+            value={data.city}
+            onChange={onChangeHandler}
+            type="text"
+            placeholder="Thành phố"
+          />
+          <input
+            required
+            name="state"
+            value={data.state}
+            onChange={onChangeHandler}
+            type="text"
+            placeholder="Tỉnh/Bang"
+          />
         </div>
 
         <div className="muti-fields">
-          <input name="postalCode" value={data.postalCode} onChange={onChangeHandler} type="text" placeholder="Mã bưu chính" />
-          <input required name="country" value={data.country} onChange={onChangeHandler} type="text" placeholder="Quốc gia" />
+          <input
+            name="postalCode"
+            value={data.postalCode}
+            onChange={onChangeHandler}
+            type="text"
+            placeholder="Mã bưu chính"
+          />
+          <input
+            required
+            name="country"
+            value={data.country}
+            onChange={onChangeHandler}
+            type="text"
+            placeholder="Quốc gia"
+          />
         </div>
 
-        <input required name="phone" value={data.phone} onChange={onChangeHandler} type="text" placeholder="Số điện thoại" />
+        <input
+          required
+          name="phone"
+          value={data.phone}
+          onChange={onChangeHandler}
+          type="text"
+          placeholder="Số điện thoại"
+        />
       </div>
 
       <div className="place-order-right">
@@ -181,4 +243,12 @@ const PlaceOrder = () => {
             disabled={isLoading || currentSubtotal === 0}
             title={currentSubtotal === 0 ? "Giỏ hàng trống" : "Thanh toán"}
           >
-            {isLo
+            {isLoading ? "Đang xử lý..." : "Thanh toán"}
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+};
+
+export default PlaceOrder;
