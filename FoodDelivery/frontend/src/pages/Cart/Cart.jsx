@@ -1,23 +1,38 @@
 // src/pages/Cart/Cart.jsx
-
-import React, { useContext, useEffect } from 'react';
-import './Cart.css';
-import { StoreContext } from '../../context/StoreContext';
-import { useNavigate } from 'react-router-dom';
+import React, { useContext, useEffect, useMemo } from "react";
+import "./Cart.css";
+import { StoreContext } from "../../context/StoreContext";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  // THAY ĐỔI food_list THÀNH foodList VÀ ĐẢM BẢO LẤY getTotalCartAmount
-  const { cartItems, foodList, removeFromCart, getTotalCartAmount, url } = useContext(StoreContext); // <-- Đã thay đổi ở đây
+  const { cartItems, foodList = [], removeFromCart, getTotalCartAmount } =
+    useContext(StoreContext);
 
   const navigate = useNavigate();
 
-  const deliveryFee = 2; // Bạn có thể muốn đặt giá trị này động
-  const subtotal = getTotalCartAmount(); // Lấy tổng tạm tính từ hàm
-  const totalAmount = subtotal + deliveryFee;
+  // Base URL backend (Render)
+  const API_BASE = import.meta.env.VITE_API_URL; // e.g. https://dacn.onrender.com
+
+  // format tiền (hiển thị dấu phẩy, vẫn dùng ký hiệu $ như UI của bạn)
+  const fmt = useMemo(
+    () => new Intl.NumberFormat("vi-VN", { minimumFractionDigits: 0 }),
+    []
+  );
+
+  const deliveryFee = 2;
+  const subtotal = getTotalCartAmount?.() || 0;
+  const totalAmount = subtotal === 0 ? 0 : subtotal + deliveryFee;
+
+  // hàm build link ảnh an toàn
+  const imgSrc = (img) => {
+    if (!img) return "";
+    if (/^https?:\/\//i.test(img)) return img; // đã là URL tuyệt đối
+    return `${API_BASE}/images/${img}`;
+  };
 
   return (
     <div className="cart">
@@ -32,50 +47,61 @@ const Cart = () => {
         </div>
         <br />
         <hr />
-        {/* Thêm kiểm tra foodList trước khi lặp */}
-        {foodList && Array.isArray(foodList) && foodList.map((item) => {
-          // Kiểm tra xem sản phẩm có trong giỏ hàng và số lượng lớn hơn 0
-          if (cartItems[item._id] > 0) {
+
+        {Array.isArray(foodList) &&
+          foodList.map((item) => {
+            const qty = cartItems?.[item?._id] || 0;
+            if (!item || qty <= 0) return null;
+
+            const price = Number(item.price) || 0;
+            const line = price * qty;
+
             return (
               <div key={item._id}>
                 <div className="cart-items-title cart-items-item">
-                  <img src={url+"/images/"+item.image} alt={item.name} />
+                  <img src={imgSrc(item.image)} alt={item.name} />
                   <p>{item.name}</p>
-                  <p>${item.price.toLocaleString('vi-VN')}</p>
-                  <p>{cartItems[item._id]}</p>
-                  <p>${(item.price * cartItems[item._id]).toLocaleString('vi-VN')}</p>
-                  <p onClick={() => removeFromCart(item._id)} className="cross">x</p>
+                  <p>${fmt.format(price)}</p>
+                  <p>{qty}</p>
+                  <p>${fmt.format(line)}</p>
+                  <p onClick={() => removeFromCart(item._id)} className="cross">
+                    x
+                  </p>
                 </div>
                 <hr />
               </div>
             );
-          }
-          return null;
-        })}
+          })}
       </div>
+
       <div className="cart-bottom">
         <div className="cart-total">
           <h2>Tổng cộng giỏ hàng</h2>
           <div>
             <div className="cart-total-details">
               <p>Tạm tính</p>
-              <p>${subtotal.toLocaleString('vi-VN')}</p> {/* Sử dụng biến tổng tạm tính */}
+              <p>${fmt.format(subtotal)}</p>
             </div>
             <hr />
             <div className="cart-total-details">
               <p>Phí vận chuyển</p>
-              {/* Điều kiện hiển thị phí vận chuyển */}
-              <p>${(subtotal === 0 ? 0 : deliveryFee).toLocaleString('vi-VN')}</p>
+              <p>${fmt.format(subtotal === 0 ? 0 : deliveryFee)}</p>
             </div>
             <hr />
             <div className="cart-total-details">
               <p>Tổng thanh toán</p>
-              {/* Điều kiện tính tổng cuối cùng */}
-              <p>${(subtotal === 0 ? 0 : totalAmount).toLocaleString('vi-VN')}</p>
+              <p>${fmt.format(totalAmount)}</p>
             </div>
           </div>
-          <button onClick={()=>navigate('/order')}>Tiến hành thanh toán</button>
+          <button
+            disabled={subtotal === 0}
+            onClick={() => navigate("/order")}
+            title={subtotal === 0 ? "Giỏ hàng trống" : "Tiến hành thanh toán"}
+          >
+            Tiến hành thanh toán
+          </button>
         </div>
+
         <div className="cart-promocode">
           <div>
             <p>Mã khuyến mãi</p>

@@ -1,14 +1,15 @@
-import React, { useContext, useState, useEffect } from 'react'; // Import useEffect
-import './PlaceOrder.css';
-import { StoreContext } from '../../context/StoreContext';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+// src/pages/PlaceOrder/PlaceOrder.jsx
+import React, { useContext, useState, useEffect } from "react";
+import "./PlaceOrder.css";
+import { StoreContext } from "../../context/StoreContext";
+import { api } from "../../api/client";
+import { useNavigate } from "react-router-dom";
 
 const PlaceOrder = () => {
-  // Sử dụng foodList từ context
-  const { getTotalCartAmount, token, foodList, cartItems, url, setCartItems } = useContext(StoreContext); // <-- Đã sửa
+  const { getTotalCartAmount, token, foodList = [], cartItems, setCartItems } =
+    useContext(StoreContext);
 
-  const navigate = useNavigate(); // Khai báo useNavigate
+  const navigate = useNavigate();
 
   const [data, setData] = useState({
     firstName: "",
@@ -19,163 +20,165 @@ const PlaceOrder = () => {
     state: "",
     postalCode: "",
     country: "",
-    phone: ""
+    phone: "",
   });
 
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const onChangeHandler = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
-    setData(data => ({ ...data, [name]: value }));
+  const onChangeHandler = (e) => {
+    const { name, value } = e.target;
+    setData((prev) => ({ ...prev, [name]: value }));
   };
 
   const validateInputs = () => {
-    // Regex được sửa để cho phép 10-15 chữ số, bao gồm cả dấu + ở đầu cho mã quốc gia nếu có.
     if (!/^\+?\d{10,15}$/.test(data.phone)) {
       setError("Số điện thoại phải từ 10 đến 15 chữ số.");
       return false;
     }
-    // postalCode không bắt buộc, chỉ kiểm tra nếu có giá trị
     if (data.postalCode && !/^\d{4,10}$/.test(data.postalCode)) {
       setError("Mã bưu chính phải từ 4 đến 10 chữ số.");
       return false;
     }
-    setError(""); // Xóa lỗi nếu không có lỗi nào
+    setError("");
     return true;
   };
 
-  const placeOrder = async (event) => {
-    event.preventDefault();
+  const placeOrder = async (e) => {
+    e.preventDefault();
     if (!validateInputs()) return;
 
-    setIsLoading(true);
-    let orderItems = [];
-
-    // KIỂM TRA foodList TRƯỚC KHI LẶP
-    if (!foodList || !Array.isArray(foodList) || foodList.length === 0) {
-      console.error("PlaceOrder.jsx: foodList is not available or empty when placing order.");
-      setError("Dữ liệu món ăn chưa tải xong. Vui lòng thử lại.");
-      setIsLoading(false);
-      return; // Dừng hàm nếu foodList không hợp lệ
+    if (!token) {
+      setError("Bạn chưa đăng nhập.");
+      return;
     }
 
-    // Vòng lặp bây giờ sẽ an toàn với foodList
-    foodList.forEach((item) => {
-      const quantity = cartItems[item._id];
-      if (quantity > 0) {
-        orderItems.push({
-          itemId: item._id,
-          name: item.name,
-          price: item.price,
-          quantity: quantity,
-          description: item.description || "Mô tả sản phẩm không có",
-        });
-      }
-    });
+    setIsLoading(true);
 
-    // Kiểm tra nếu giỏ hàng rỗng sau khi lọc
+    // Bảo vệ khi foodList chưa sẵn sàng
+    if (!Array.isArray(foodList) || foodList.length === 0) {
+      setError("Dữ liệu món ăn chưa tải xong. Vui lòng thử lại.");
+      setIsLoading(false);
+      return;
+    }
+
+    // Tạo danh sách item từ cartItems
+    const orderItems = foodList
+      .filter((it) => cartItems?.[it?._id] > 0)
+      .map((it) => ({
+        itemId: it._id,
+        name: it.name,
+        price: Number(it.price) || 0,
+        quantity: cartItems[it._id],
+        description: it.description || "Mô tả sản phẩm không có",
+      }));
+
     if (orderItems.length === 0) {
       setError("Giỏ hàng của bạn đang trống. Vui lòng thêm sản phẩm.");
       setIsLoading(false);
       return;
     }
 
-    let orderData = {
+    const DELIVERY_FEE = 2;
+    const subtotal = Number(getTotalCartAmount?.() || 0);
+    const amount = subtotal + DELIVERY_FEE;
+
+    const orderData = {
       address: data,
       items: orderItems,
-      amount: getTotalCartAmount() + 2 // Giả định phí giao hàng là 2
+      amount, // nếu backend dùng Stripe theo đơn vị cents thì backend sẽ tự quy đổi
     };
 
-    console.log("Dữ liệu đơn hàng gửi đi từ frontend:", JSON.stringify(orderData, null, 2));
-    console.log("Token được gửi:", token);
-
     try {
-      let response = await axios.post(url + "/api/order/place", orderData, { headers: { token } });
-      if (response.data.success) {
-        const { session_url } = response.data;
-        window.location.replace(session_url);
-        setCartItems({}); // Xóa giỏ hàng sau khi đặt hàng thành công
+      const res = await api.post("/api/order/place", orderData, {
+        headers: { token },
+      });
+
+      if (res.data?.success) {
+        // Nếu backend trả về session_url (Stripe Checkout)
+        if (res.data.session_url) {
+          setCartItems({});
+          window.location.replace(res.data.session_url);
+          return;
+        }
+        // Hoặc chuyển tới trang "đơn hàng của tôi" khi không dùng Stripe
+        setCartItems({});
+        navigate("/myorders");
       } else {
-        setError(response.data.message || "Không thể đặt hàng. Vui lòng thử lại.");
+        setError(res.data?.message || "Không thể đặt hàng. Vui lòng thử lại.");
       }
     } catch (err) {
-      console.error("Lỗi khi đặt hàng:", err);
-      setError(err.response?.data?.message || "Đã xảy ra lỗi khi đặt hàng.");
+      console.error("Lỗi khi đặt hàng:", err?.response?.data || err.message);
+      setError(err?.response?.data?.message || "Đã xảy ra lỗi khi đặt hàng.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // useEffect để kiểm tra giỏ hàng rỗng và chuyển hướng
+  // Nếu giỏ hàng rỗng (sau khi data đã tải) thì quay về Cart
   useEffect(() => {
-    // Chỉ chuyển hướng nếu getTotalCartAmount() là 0 VÀ foodList đã được tải
-    // (kiểm tra foodList.length > 0 để đảm bảo fetch đã hoàn tất)
-    // Nếu bạn muốn giỏ hàng rỗng ngay từ đầu đã chuyển hướng, bạn có thể bỏ foodList.length > 0
-    if (foodList && foodList.length > 0 && getTotalCartAmount() === 0) {
-      navigate('/cart');
+    if (Array.isArray(foodList) && foodList.length > 0 && (getTotalCartAmount?.() || 0) === 0) {
+      navigate("/cart");
     }
-  }, [getTotalCartAmount, navigate, foodList]); // Thêm foodList vào dependency array
+  }, [foodList, getTotalCartAmount, navigate]);
 
-  const deliveryFee = 2;
-  // totalAmount chỉ tính khi subtotal không phải 0 để tránh hiển thị phí giao hàng khi giỏ trống
-  const currentSubtotal = getTotalCartAmount();
-  const displayDeliveryFee = currentSubtotal > 0 ? deliveryFee : 0;
-  const displayTotalAmount = currentSubtotal > 0 ? currentSubtotal + deliveryFee : 0;
-
+  const DELIVERY_FEE = 2;
+  const currentSubtotal = Number(getTotalCartAmount?.() || 0);
+  const displayDeliveryFee = currentSubtotal > 0 ? DELIVERY_FEE : 0;
+  const displayTotalAmount = currentSubtotal > 0 ? currentSubtotal + DELIVERY_FEE : 0;
 
   return (
     <form onSubmit={placeOrder} className="place-order">
       {error && <div className="error-message">{error}</div>}
+
       <div className="place-order-left">
         <p className="title">Thông tin giao hàng</p>
-        <div className="muti-fields"> {/* Đã sửa chính tả: multi-fields */}
-          <input required name='firstName' onChange={onChangeHandler} value={data.firstName} type="text" placeholder='Tên' />
-          <input required name='lastName' onChange={onChangeHandler} value={data.lastName} type="text" placeholder='Họ' />
+
+        <div className="muti-fields">
+          <input required name="firstName" value={data.firstName} onChange={onChangeHandler} type="text" placeholder="Tên" />
+          <input required name="lastName" value={data.lastName} onChange={onChangeHandler} type="text" placeholder="Họ" />
         </div>
-        <input required name='email' onChange={onChangeHandler} value={data.email} type="email" placeholder='Địa chỉ email' />
-        <input required name='street' onChange={onChangeHandler} value={data.street} type="text" placeholder='Đường/Phố' />
-        <div className="muti-fields"> {/* Đã sửa chính tả: multi-fields */}
-          <input required name='city' onChange={onChangeHandler} value={data.city} type="text" placeholder='Thành phố' />
-          <input required name='state' onChange={onChangeHandler} value={data.state} type="text" placeholder='Tỉnh/Bang' />
+
+        <input required name="email" value={data.email} onChange={onChangeHandler} type="email" placeholder="Địa chỉ email" />
+        <input required name="street" value={data.street} onChange={onChangeHandler} type="text" placeholder="Đường/Phố" />
+
+        <div className="muti-fields">
+          <input required name="city" value={data.city} onChange={onChangeHandler} type="text" placeholder="Thành phố" />
+          <input required name="state" value={data.state} onChange={onChangeHandler} type="text" placeholder="Tỉnh/Bang" />
         </div>
-        <div className="muti-fields"> {/* Đã sửa chính tả: multi-fields */}
-          <input name='postalCode' onChange={onChangeHandler} value={data.postalCode} type="text" placeholder='Mã bưu chính' />
-          <input required name='country' onChange={onChangeHandler} value={data.country} type="text" placeholder='Quốc gia' />
+
+        <div className="muti-fields">
+          <input name="postalCode" value={data.postalCode} onChange={onChangeHandler} type="text" placeholder="Mã bưu chính" />
+          <input required name="country" value={data.country} onChange={onChangeHandler} type="text" placeholder="Quốc gia" />
         </div>
-        <input required name='phone' onChange={onChangeHandler} value={data.phone} type="text" placeholder='Số điện thoại' />
+
+        <input required name="phone" value={data.phone} onChange={onChangeHandler} type="text" placeholder="Số điện thoại" />
       </div>
+
       <div className="place-order-right">
         <div className="cart-total">
           <h2>Tổng cộng giỏ hàng</h2>
           <div>
             <div className="cart-total-details">
               <p>Tạm tính</p>
-              <p>${currentSubtotal.toFixed(2)}</p> {/* Sử dụng currentSubtotal */}
+              <p>${currentSubtotal.toFixed(2)}</p>
             </div>
             <hr />
             <div className="cart-total-details">
               <p>Phí vận chuyển</p>
-              <p>${displayDeliveryFee.toFixed(2)}</p> {/* Sử dụng displayDeliveryFee */}
+              <p>${displayDeliveryFee.toFixed(2)}</p>
             </div>
             <hr />
             <div className="cart-total-details">
               <p>Tổng thanh toán</p>
-              <p>${displayTotalAmount.toFixed(2)}</p> {/* Sử dụng displayTotalAmount */}
+              <p>${displayTotalAmount.toFixed(2)}</p>
             </div>
           </div>
+
           <button
             type="submit"
-            className={`payment-button ${isLoading ? 'loading' : ''}`}
-            disabled={isLoading || currentSubtotal === 0} // Disabled nếu giỏ hàng rỗng
+            className={`payment-button ${isLoading ? "loading" : ""}`}
+            disabled={isLoading || currentSubtotal === 0}
+            title={currentSubtotal === 0 ? "Giỏ hàng trống" : "Thanh toán"}
           >
-            {isLoading ? 'Đang xử lý...' : 'Thanh toán'}
-          </button>
-        </div>
-      </div>
-    </form>
-  );
-};
-
-export default PlaceOrder;
+            {isLo

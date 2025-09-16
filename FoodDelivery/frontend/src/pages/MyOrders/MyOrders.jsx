@@ -1,39 +1,46 @@
 // src/pages/MyOrders/MyOrders.jsx
-import React, { useContext, useEffect, useState } from 'react';
-import './MyOrders.css';
-import { StoreContext } from '../../context/StoreContext'; // Đã cập nhật đường dẫn import
-import axios from 'axios';  
-import { assets } from '../../assets/assets';
+import React, { useContext, useEffect, useState, useMemo } from "react";
+import "./MyOrders.css";
+import { StoreContext } from "../../context/StoreContext";
+import { api } from "../../api/client";
+import { assets } from "../../assets/assets";
 
 const MyOrders = () => {
-  const { url, token } = useContext(StoreContext);
+  const { token } = useContext(StoreContext);
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true); // Thêm state để quản lý trạng thái tải
-  const [error, setError] = useState(null); // Thêm state để quản lý lỗi
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // format tiền
+  const fmt = useMemo(
+    () => new Intl.NumberFormat("vi-VN", { minimumFractionDigits: 0 }),
+    []
+  );
 
   const fetchOrders = async () => {
-    setLoading(true); // Bắt đầu tải, đặt loading thành true
-    setError(null); // Xóa lỗi cũ
+    setLoading(true);
+    setError(null);
     try {
-      // Đảm bảo request body trống rỗng được gửi đúng cách nếu backend yêu cầu
-      const response = await axios.post(url + "/api/order/userorders", {}, { headers: { token } });
-      if (response.data.success) {
-        // --- BƯỚC KIỂM TRA DỮ LIỆU ---
-        console.log("Dữ liệu đơn hàng đầu tiên từ API:", response.data.data[0]);
-        // -----------------------------
-
-        // Sắp xếp các đơn hàng, đưa đơn hàng mới nhất lên đầu bằng cách sử dụng trường 'date'
-        const sortedData = response.data.data.sort((a, b) => new Date(b.date) - new Date(a.date));
-        setData(sortedData);
+      const res = await api.post(
+        "/api/order/userorders",
+        {},
+        { headers: { token } }
+      );
+      if (res.data?.success) {
+        const arr = Array.isArray(res.data.data) ? res.data.data : [];
+        // sắp xếp mới nhất trước (ưu tiên date/createdAt)
+        const sorted = [...arr].sort(
+          (a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt)
+        );
+        setData(sorted);
       } else {
-        setError(response.data.message || "Không thể tải đơn hàng.");
-        console.error("Lỗi API khi tải đơn hàng:", response.data.message);
+        setError(res.data?.message || "Không thể tải đơn hàng.");
       }
-    } catch (err) {
+    } catch (e) {
       setError("Không thể tải đơn hàng. Vui lòng thử lại sau.");
-      console.error("Lỗi mạng hoặc máy chủ khi tải đơn hàng:", err);
+      console.error("Fetch orders error:", e?.response?.data || e.message);
     } finally {
-      setLoading(false); // Kết thúc tải, đặt loading thành false
+      setLoading(false);
     }
   };
 
@@ -41,45 +48,44 @@ const MyOrders = () => {
     if (token) {
       fetchOrders();
     } else {
-      // Nếu không có token, bạn có thể chuyển hướng hoặc hiển thị thông báo
-      // navigate('/login'); // Ví dụ: chuyển hướng về trang đăng nhập
-      console.warn("Không có token để tải đơn hàng.");
-      setLoading(false); // Dừng loading nếu không có token để fetch
+      setLoading(false);
+      setError("Bạn chưa đăng nhập.");
     }
-  }, [token]); // Dependency array: fetch lại khi token thay đổi
+  }, [token]);
 
   return (
-    <div className='my-orders'>
+    <div className="my-orders">
       <h2>Đơn hàng của tôi</h2>
       <div className="container">
         {loading ? (
-          <p>Đang tải đơn hàng...</p> // Hiển thị thông báo tải
+          <p>Đang tải đơn hàng...</p>
         ) : error ? (
-          <p className="error-message">{error}</p> // Hiển thị thông báo lỗi
+          <p className="error-message">{error}</p>
         ) : data.length === 0 ? (
-          <p>Bạn chưa có đơn hàng nào.</p> // Hiển thị khi không có đơn hàng
+          <p>Bạn chưa có đơn hàng nào.</p>
         ) : (
           data.map((order) => {
-            // Sử dụng order._id làm key vì mỗi đơn hàng có ID duy nhất
+            const items = order.items || [];
+            const amount = Number(order.amount) || 0;
+            const status = order.status || "pending";
+
             return (
               <div key={order._id} className="my-orders-order">
                 <img src={assets.parcel_icon} alt="Parcel Icon" />
-                <p>
-                  {order.items.map((item, itemIndex) => {
-                    // Sử dụng item._id hoặc item.foodId làm key cho từng mặt hàng nếu có
-                    // Nếu không, index cũng tạm chấp nhận được ở đây vì đây là danh sách tĩnh bên trong mỗi order
-                    return (
-                      <span key={itemIndex}>
-                        {item.name} x {item.quantity}
-                        {itemIndex === order.items.length - 1 ? '' : ', '} {/* Thêm dấu phẩy trừ mục cuối cùng */}
-                      </span>
-                    );
-                  })}
+                <p className="items">
+                  {items.map((it, i) => (
+                    <span key={it._id || i}>
+                      {it.name} x {it.quantity}
+                      {i === items.length - 1 ? "" : ", "}
+                    </span>
+                  ))}
                 </p>
-                <p>${order.amount.toLocaleString('vi-VN')}.00</p> {/* Hiển thị tổng tiền đơn hàng, thêm định dạng nếu cần */}
-                <p>Mặt hàng: {order.items.length}</p> {/* Tổng số loại mặt hàng */}
-                <p><span>&#x25CF;</span> <b>{order.status}</b></p> {/* Trạng thái đơn hàng */}
-                <button onClick={fetchOrders}>Cập nhật đơn hàng</button> {/* Nút theo dõi/cập nhật (có thể thêm logic sau) */}
+                <p className="amount">${fmt.format(amount)}.00</p>
+                <p className="count">Mặt hàng: {items.length}</p>
+                <p className="status">
+                  <span>&#x25CF;</span> <b>{status}</b>
+                </p>
+                <button onClick={fetchOrders}>Cập nhật đơn hàng</button>
               </div>
             );
           })
