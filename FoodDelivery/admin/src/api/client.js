@@ -8,7 +8,7 @@ const BASE_URL =
 // Tạo axios instance dùng chung cho Admin
 export const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 20000,           // 20s
+  timeout: 60000,           // 20s
   withCredentials: false,   // đổi true nếu backend dùng cookie/session
   headers: {
     // "Content-Type" sẽ được axios set tự động.
