@@ -17,9 +17,9 @@ const PlaceOrder = () => {
     email: "",
     street: "",
     city: "",
-    state: "",
-    postalCode: "",
-    country: "",
+    // state: "",
+    // postalCode: "",
+    // country: "",
     phone: "",
   });
 
@@ -179,17 +179,17 @@ const PlaceOrder = () => {
             type="text"
             placeholder="Thành phố"
           />
-          <input
+          {/* <input
             required
             name="state"
             value={data.state}
             onChange={onChangeHandler}
             type="text"
             placeholder="Tỉnh/Bang"
-          />
+          /> */}
         </div>
 
-        <div className="muti-fields">
+        {/* <div className="muti-fields">
           <input
             name="postalCode"
             value={data.postalCode}
@@ -205,7 +205,7 @@ const PlaceOrder = () => {
             type="text"
             placeholder="Quốc gia"
           />
-        </div>
+        </div> */}
 
         <input
           required
