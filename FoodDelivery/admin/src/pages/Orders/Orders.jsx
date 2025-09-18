@@ -1,20 +1,35 @@
 // FoodDelivery/admin/src/pages/Orders/Orders.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import "./Orders.css";
-import { api } from "../../api/client";           // ✅ dùng axios instance
+import { api } from "../../api/client";
 import { toast } from "react-toastify";
 import { assets } from "../../assets/assets";
+
+const getOrderTime = (o = {}) => {
+  // Ưu tiên createdAt -> date -> fallback theo _id (timestamp của ObjectId)
+  if (o.createdAt) return new Date(o.createdAt).getTime();
+  if (o.date)      return new Date(o.date).getTime();
+  if (o._id && typeof o._id === "string" && o._id.length >= 8) {
+    try {
+      return parseInt(o._id.substring(0, 8), 16) * 1000;
+    } catch {}
+  }
+  return 0;
+};
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchAllOrders = async () => {
+  const fetchAllOrders = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await api.get("/api/order/list");   // backend của bạn đang dùng route này
+      const res = await api.get("/api/order/list");
       if (res.data?.success) {
-        setOrders(res.data.data || []);
+        const data = Array.isArray(res.data.data) ? res.data.data : [];
+        // 👇 Sắp xếp mới nhất trước
+        data.sort((a, b) => getOrderTime(b) - getOrderTime(a));
+        setOrders(data);
       } else {
         toast.error(res.data?.message || "Lỗi tải đơn hàng");
       }
@@ -24,7 +39,7 @@ const Orders = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const statusHandler = async (event, orderId) => {
     const status = event.target.value;
@@ -32,7 +47,7 @@ const Orders = () => {
       const res = await api.post("/api/order/status", { orderId, status });
       if (res.data?.success) {
         toast.success("Cập nhật trạng thái thành công");
-        fetchAllOrders();
+        fetchAllOrders(); // reload & vẫn giữ sort
       } else {
         toast.error(res.data?.message || "Cập nhật trạng thái thất bại");
       }
@@ -44,7 +59,7 @@ const Orders = () => {
 
   useEffect(() => {
     fetchAllOrders();
-  }, []);
+  }, [fetchAllOrders]);
 
   if (loading) {
     return (
@@ -68,7 +83,7 @@ const Orders = () => {
 
               <div>
                 <p className="order-item-food">
-                  {order.items.map((item, idx) => (
+                  {order.items?.map((item, idx) => (
                     <span key={`${order._id}-${item.itemId || idx}`}>
                       {item.name} x {item.quantity}
                       {idx < order.items.length - 1 ? ", " : ""}
