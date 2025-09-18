@@ -1,13 +1,21 @@
 // src/pages/PlaceOrder/PlaceOrder.jsx
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import "./PlaceOrder.css";
 import { StoreContext } from "../../context/StoreContext";
 import { api } from "../../api/client";
 import { useNavigate } from "react-router-dom";
 
+const DELIVERY_FEE = 2; // chỉ dùng để hiển thị ở UI
+
 const PlaceOrder = () => {
-  const { getTotalCartAmount, token, foodList = [], cartItems, setCartItems } =
-    useContext(StoreContext);
+  const {
+    getTotalCartAmount,
+    token,
+    cartItems = {},
+    setCartItems,
+    foodMap = {},
+    foodList = [],
+  } = useContext(StoreContext);
 
   const navigate = useNavigate();
 
@@ -17,14 +25,24 @@ const PlaceOrder = () => {
     email: "",
     street: "",
     city: "",
-    // state: "",
-    // postalCode: "",
-    // country: "",
     phone: "",
   });
 
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Tính subtotal ở client chỉ để hiển thị
+  const currentSubtotal = useMemo(() => Number(getTotalCartAmount?.() || 0), [getTotalCartAmount]);
+  const displayDeliveryFee = currentSubtotal > 0 ? DELIVERY_FEE : 0;
+  const displayTotalAmount = currentSubtotal > 0 ? currentSubtotal + DELIVERY_FEE : 0;
+
+  // Nếu giỏ trống (sau khi food đã load) thì quay về cart
+  useEffect(() => {
+    // Khi đã có foodList (hoặc có cartItems) mà subtotal = 0 thì điều hướng
+    if ((foodList?.length || Object.keys(cartItems || {}).length) && currentSubtotal === 0) {
+      navigate("/cart");
+    }
+  }, [foodList, cartItems, currentSubtotal, navigate]);
 
   const onChangeHandler = (e) => {
     const { name, value } = e.target;
@@ -32,16 +50,42 @@ const PlaceOrder = () => {
   };
 
   const validateInputs = () => {
+    // Các field bắt buộc theo backend
+    const requiredKeys = ["firstName", "lastName", "email", "street", "city", "phone"];
+    for (const k of requiredKeys) {
+      if (!String(data[k] || "").trim()) {
+        setError("Vui lòng nhập đầy đủ thông tin giao hàng.");
+        return false;
+      }
+    }
+    // Phone 10–15 chữ số, có thể có dấu +
     if (!/^\+?\d{10,15}$/.test(data.phone)) {
       setError("Số điện thoại phải từ 10 đến 15 chữ số.");
       return false;
     }
-    if (data.postalCode && !/^\d{4,10}$/.test(data.postalCode)) {
-      setError("Mã bưu chính phải từ 4 đến 10 chữ số.");
-      return false;
-    }
     setError("");
     return true;
+  };
+
+  const buildOrderItems = () => {
+    // Gửi tối thiểu theo backend: { itemId, quantity }
+    // Ưu tiên map theo cartItems để không phụ thuộc vào foodList load
+    const items = [];
+    for (const [id, qty] of Object.entries(cartItems)) {
+      const quantity = Number(qty) || 0;
+      if (quantity <= 0) continue;
+
+      // Optional: xác thực id tồn tại trong foodMap/foodList
+      const known =
+        (foodMap && foodMap[id]) ||
+        (Array.isArray(foodList) && foodList.find((f) => String(f._id) === String(id)));
+      if (!known) {
+        // Bỏ qua item lạ để tránh backend báo lỗi
+        continue;
+      }
+      items.push({ itemId: id, quantity });
+    }
+    return items;
   };
 
   const placeOrder = async (e) => {
@@ -53,52 +97,32 @@ const PlaceOrder = () => {
       return;
     }
 
-    setIsLoading(true);
-
-    if (!Array.isArray(foodList) || foodList.length === 0) {
-      setError("Dữ liệu món ăn chưa tải xong. Vui lòng thử lại.");
-      setIsLoading(false);
-      return;
-    }
-
-    const orderItems = foodList
-      .filter((it) => cartItems?.[it?._id] > 0)
-      .map((it) => ({
-        itemId: it._id,
-        name: it.name,
-        price: Number(it.price) || 0,
-        quantity: cartItems[it._id],
-        description: it.description || "Mô tả sản phẩm không có",
-      }));
-
+    const orderItems = buildOrderItems();
     if (orderItems.length === 0) {
       setError("Giỏ hàng của bạn đang trống. Vui lòng thêm sản phẩm.");
-      setIsLoading(false);
       return;
     }
 
-    const DELIVERY_FEE = 2;
-    const subtotal = Number(getTotalCartAmount?.() || 0);
-    const amount = subtotal + DELIVERY_FEE;
-
-    const orderData = {
-      address: data,
-      items: orderItems,
-      amount,
-    };
-
+    setIsLoading(true);
     try {
-      const res = await api.post("/api/order/place", orderData, {
-        headers: { token }, // hoặc Authorization: `Bearer ${token}` nếu backend dùng chuẩn Bearer
+      // Backend tự tính tiền từ DB → chỉ cần gửi address + items
+      const payload = { address: data, items: orderItems };
+
+      const res = await api.post("/api/order/place", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`, // chuẩn Bearer
+          // nếu bạn vẫn dùng header 'token', backend cũng hỗ trợ:
+          // token,
+        },
       });
 
       if (res.data?.success) {
+        // Xóa giỏ trước khi rời trang
+        setCartItems({});
         if (res.data.session_url) {
-          setCartItems({});
-          window.location.replace(res.data.session_url);
+          window.location.replace(res.data.session_url); // tới Stripe Checkout
           return;
         }
-        setCartItems({});
         navigate("/myorders");
       } else {
         setError(res.data?.message || "Không thể đặt hàng. Vui lòng thử lại.");
@@ -110,22 +134,6 @@ const PlaceOrder = () => {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (
-      Array.isArray(foodList) &&
-      foodList.length > 0 &&
-      (getTotalCartAmount?.() || 0) === 0
-    ) {
-      navigate("/cart");
-    }
-  }, [foodList, getTotalCartAmount, navigate]);
-
-  const DELIVERY_FEE = 2;
-  const currentSubtotal = Number(getTotalCartAmount?.() || 0);
-  const displayDeliveryFee = currentSubtotal > 0 ? DELIVERY_FEE : 0;
-  const displayTotalAmount =
-    currentSubtotal > 0 ? currentSubtotal + DELIVERY_FEE : 0;
 
   return (
     <form onSubmit={placeOrder} className="place-order">
@@ -161,6 +169,7 @@ const PlaceOrder = () => {
           type="email"
           placeholder="Địa chỉ email"
         />
+
         <input
           required
           name="street"
@@ -179,33 +188,8 @@ const PlaceOrder = () => {
             type="text"
             placeholder="Thành phố"
           />
-          {/* <input
-            required
-            name="state"
-            value={data.state}
-            onChange={onChangeHandler}
-            type="text"
-            placeholder="Tỉnh/Bang"
-          /> */}
+          {/* state/country/postalCode là optional theo backend nên bỏ ở UI */}
         </div>
-
-        {/* <div className="muti-fields">
-          <input
-            name="postalCode"
-            value={data.postalCode}
-            onChange={onChangeHandler}
-            type="text"
-            placeholder="Mã bưu chính"
-          />
-          <input
-            required
-            name="country"
-            value={data.country}
-            onChange={onChangeHandler}
-            type="text"
-            placeholder="Quốc gia"
-          />
-        </div> */}
 
         <input
           required
