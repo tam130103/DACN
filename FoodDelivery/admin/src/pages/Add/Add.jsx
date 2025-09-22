@@ -2,8 +2,11 @@
 import React, { useState, useRef } from "react";
 import "./Add.css";
 import { assets } from "../../assets/assets";
-import { api } from "../../api/client";  // chỉ dùng api, bỏ authHeader
+import { api } from "../../api/client";
 import { toast } from "react-toastify";
+
+const MAX_MB = 5; // giới hạn 5MB
+const ALLOW_TYPES = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
 
 const Add = () => {
   const [image, setImage] = useState(null);
@@ -14,7 +17,11 @@ const Add = () => {
     price: "",
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+
   const filePreviewUrl = useRef(null);
+  const fileInputRef = useRef(null);
 
   const onChangeHandler = (e) => {
     const { name, value } = e.target;
@@ -23,11 +30,31 @@ const Add = () => {
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
-    setImage(file || null);
+    if (!file) {
+      setImage(null);
+      return;
+    }
 
-    // cleanup preview cũ để tránh leak
+    // kiểm tra định dạng
+    if (!ALLOW_TYPES.includes(file.type)) {
+      toast.error("Chỉ chấp nhận JPEG/PNG/WebP.");
+      e.target.value = "";
+      return;
+    }
+
+    // kiểm tra dung lượng
+    const sizeMb = file.size / (1024 * 1024);
+    if (sizeMb > MAX_MB) {
+      toast.error(`Ảnh vượt quá ${MAX_MB}MB.`);
+      e.target.value = "";
+      return;
+    }
+
+    setImage(file);
+
+    // cleanup URL preview cũ để tránh leak
     if (filePreviewUrl.current) URL.revokeObjectURL(filePreviewUrl.current);
-    if (file) filePreviewUrl.current = URL.createObjectURL(file);
+    filePreviewUrl.current = URL.createObjectURL(file);
   };
 
   const handleSubmit = async (e) => {
@@ -37,6 +64,7 @@ const Add = () => {
       toast.error("Vui lòng chọn ảnh sản phẩm.");
       return;
     }
+
     const priceNum = Number(data.price);
     if (!Number.isFinite(priceNum) || priceNum <= 0) {
       toast.error("Giá sản phẩm phải lớn hơn 0.");
@@ -48,34 +76,44 @@ const Add = () => {
     formData.append("description", data.description.trim());
     formData.append("category", data.category);
     formData.append("price", priceNum);
-    formData.append("image", image);
+    formData.append("image", image); // field 'image' phải khớp backend
+
+    setIsLoading(true);
+    setProgress(0);
 
     try {
-      const res = await api.post("/api/food/add", formData);
+      const res = await api.post("/api/food/add", formData, {
+        onUploadProgress: (evt) => {
+          if (!evt.total) return;
+          const p = Math.round((evt.loaded * 100) / evt.total);
+          setProgress(p);
+        },
+      });
 
       if (res.data?.success) {
         toast.success(res.data.message || "Đã thêm món ăn!");
+        // reset form
         setData({ name: "", description: "", category: "Salad", price: "" });
         setImage(null);
         if (filePreviewUrl.current) {
           URL.revokeObjectURL(filePreviewUrl.current);
           filePreviewUrl.current = null;
         }
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        setProgress(0);
       } else {
         toast.error(res.data?.message || "Thêm món ăn thất bại.");
       }
     } catch (err) {
       console.error("Add food error:", err?.response?.data || err.message);
-      toast.error(
-        err?.response?.data?.message || "Đã xảy ra lỗi khi thêm món ăn."
-      );
+      toast.error(err?.response?.data?.message || "Đã xảy ra lỗi khi thêm món ăn.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const previewSrc =
-    image && filePreviewUrl.current
-      ? filePreviewUrl.current
-      : assets.upload_area;
+    image && filePreviewUrl.current ? filePreviewUrl.current : assets.upload_area;
 
   return (
     <div className="add">
@@ -86,7 +124,20 @@ const Add = () => {
           <label htmlFor="image">
             <img src={previewSrc} alt="Xem trước ảnh tải lên" />
           </label>
-          <input type="file" id="image" hidden required onChange={handleFileChange} />
+          <input
+            ref={fileInputRef}
+            type="file"
+            id="image"
+            hidden
+            required
+            onChange={handleFileChange}
+            accept="image/png,image/jpeg,image/webp"
+          />
+          {isLoading && (
+            <div className="upload-progress">
+              Đang tải ảnh... {progress}%
+            </div>
+          )}
         </div>
 
         {/* Product Name */}
@@ -99,6 +150,7 @@ const Add = () => {
             value={data.name}
             onChange={onChangeHandler}
             required
+            disabled={isLoading}
           />
         </div>
 
@@ -112,7 +164,8 @@ const Add = () => {
             value={data.description}
             onChange={onChangeHandler}
             required
-          ></textarea>
+            disabled={isLoading}
+          />
         </div>
 
         {/* Category + Price */}
@@ -124,6 +177,7 @@ const Add = () => {
               value={data.category}
               onChange={onChangeHandler}
               required
+              disabled={isLoading}
             >
               <option value="Salad">Salad</option>
               <option value="Rolls">Gỏi cuốn</option>
@@ -146,13 +200,14 @@ const Add = () => {
               min="0.01"
               step="0.01"
               required
+              disabled={isLoading}
             />
           </div>
         </div>
 
         {/* Submit */}
-        <button type="submit" className="add-btn">
-          Thêm
+        <button type="submit" className="add-btn" disabled={isLoading}>
+          {isLoading ? "Đang thêm..." : "Thêm"}
         </button>
       </form>
     </div>

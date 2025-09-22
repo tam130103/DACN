@@ -1,16 +1,15 @@
+// FoodDelivery/backend/routes/foodRoute.js
 import express from 'express';
 import multer from 'multer';
 import { addFood, listFood, removeFood } from '../controllers/foodController.js';
 
-const router = express.Router();
-const upload = multer({ storage: multer.memoryStorage() }); // dùng bộ nhớ
+const foodRouter = express.Router();
 
-router.post('/add', upload.single('image'), (req, res, next) => {
-  if (!req.file) return res.status(400).json({ success: false, message: 'Image is required' });
-  next();
-}, addFood);
+// Dùng memory storage vì ta upload trực tiếp tới Cloudinary
+const upload = multer({ storage: multer.memoryStorage() });
 
-router.get('/list', listFood);
-router.post('/remove', removeFood);
+foodRouter.post('/add', upload.single('image'), addFood);
+foodRouter.get('/list', listFood);
+foodRouter.post('/remove', removeFood);
 
-export default router;
+export default foodRouter;
