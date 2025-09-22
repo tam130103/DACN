@@ -1,5 +1,11 @@
 // src/pages/MyOrders/MyOrders.jsx
-import React, { useContext, useEffect, useState, useMemo } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+} from "react";
 import "./MyOrders.css";
 import { StoreContext } from "../../context/StoreContext";
 import { api } from "../../api/client";
@@ -7,84 +13,117 @@ import { assets } from "../../assets/assets";
 
 const MyOrders = () => {
   const { token } = useContext(StoreContext);
-  const [data, setData] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [err, setErr] = useState("");
 
-  // format tiền
-  const fmt = useMemo(
-    () => new Intl.NumberFormat("vi-VN", { minimumFractionDigits: 0 }),
-    []
-  );
+  // Định dạng tiền đơn giản ($1,234.00)
+  const money = useCallback((n) => {
+    const v = Number(n) || 0;
+    return `$${v.toLocaleString("vi-VN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  }, []);
 
-  const fetchOrders = async () => {
-    setLoading(true);
-    setError(null);
+  // Lấy thời gian tạo đơn
+  const when = useCallback((o) => {
+    const d = new Date(o?.createdAt || o?.date || Date.now());
+    return d.toLocaleString("vi-VN");
+  }, []);
+
+  const fetchOrders = useCallback(async () => {
+    if (!token) {
+      setErr("Bạn chưa đăng nhập.");
+      setLoading(false);
+      return;
+    }
     try {
+      setLoading(true);
+      setErr("");
       const res = await api.post(
         "/api/order/userorders",
         {},
-        { headers: { token } }
+        {
+          headers: {
+            // Backend của bạn hỗ trợ cả 'token' và Bearer. Dùng chuẩn Bearer.
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
+
       if (res.data?.success) {
         const arr = Array.isArray(res.data.data) ? res.data.data : [];
-        // sắp xếp mới nhất trước (ưu tiên date/createdAt)
-        const sorted = [...arr].sort(
-          (a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt)
+        // Mới nhất lên đầu (ưu tiên createdAt, fallback date)
+        arr.sort(
+          (a, b) =>
+            new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date)
         );
-        setData(sorted);
+        setOrders(arr);
       } else {
-        setError(res.data?.message || "Không thể tải đơn hàng.");
+        setErr(res.data?.message || "Không thể tải đơn hàng.");
       }
     } catch (e) {
-      setError("Không thể tải đơn hàng. Vui lòng thử lại sau.");
       console.error("Fetch orders error:", e?.response?.data || e.message);
+      setErr("Không thể tải đơn hàng. Vui lòng thử lại sau.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
-    if (token) {
-      fetchOrders();
-    } else {
-      setLoading(false);
-      setError("Bạn chưa đăng nhập.");
-    }
-  }, [token]);
+    fetchOrders();
+  }, [fetchOrders]);
 
   return (
     <div className="my-orders">
-      <h2>Đơn hàng của tôi</h2>
+      <div className="my-orders-header">
+        <h2>Đơn hàng của tôi</h2>
+        <button className="refresh-btn" onClick={fetchOrders}>
+          Tải lại
+        </button>
+      </div>
+
       <div className="container">
         {loading ? (
           <p>Đang tải đơn hàng...</p>
-        ) : error ? (
-          <p className="error-message">{error}</p>
-        ) : data.length === 0 ? (
+        ) : err ? (
+          <p className="error-message">{err}</p>
+        ) : orders.length === 0 ? (
           <p>Bạn chưa có đơn hàng nào.</p>
         ) : (
-          data.map((order) => {
+          orders.map((order) => {
             const items = order.items || [];
-            const amount = Number(order.amount) || 0;
             const status = order.status || "pending";
+            const amount = order.amount;
 
             return (
               <div key={order._id} className="my-orders-order">
                 <img src={assets.parcel_icon} alt="Parcel Icon" />
-                <p className="items">
-                  {items.map((it, i) => (
-                    <span key={it._id || i}>
-                      {it.name} x {it.quantity}
-                      {i === items.length - 1 ? "" : ", "}
-                    </span>
-                  ))}
-                </p>
-                <p className="amount">${fmt.format(amount)}.00</p>
+
+                <div className="order-main">
+                  <p className="items">
+                    {items.map((it, i) => (
+                      <span key={it._id || `${order._id}-${i}`}>
+                        {it.name} x {it.quantity}
+                        {i < items.length - 1 ? ", " : ""}
+                      </span>
+                    ))}
+                  </p>
+
+                  <p className="meta">
+                    <span className="label">Thời gian:</span> {when(order)}
+                  </p>
+                </div>
+
+                <p className="amount">{money(amount)}</p>
                 <p className="count">Mặt hàng: {items.length}</p>
+
                 <p className="status">
-                  <span>&#x25CF;</span> <b>{status}</b>
+                  <span className="dot">&#x25CF;</span>{" "}
+                  <b>{status}</b>
                 </p>
+
                 <button onClick={fetchOrders}>Cập nhật đơn hàng</button>
               </div>
             );
