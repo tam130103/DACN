@@ -79,9 +79,9 @@ const MyOrders = () => {
     <div className="my-orders">
       <div className="my-orders-header">
         <h2>Đơn hàng của tôi</h2>
-        <button className="refresh-btn" onClick={fetchOrders}>
+        {/* <button className="refresh-btn" onClick={fetchOrders}>
           Tải lại
-        </button>
+        </button> */}
       </div>
 
       <div className="container">
