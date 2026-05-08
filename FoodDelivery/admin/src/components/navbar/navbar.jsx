@@ -4,10 +4,15 @@ import { assets } from '../../assets/assets';
 
 const Navbar = () => {
   return (
-    <div className="navbar">
-      <img className="logo" src={assets.logo} alt="Logo Trang Quản Trị" />
-      <img className="profile" src={assets.profile_image} alt="Ảnh hồ sơ quản trị viên" />
-    </div>
+    <nav className="navbar" aria-label="Admin Header">
+      <div className="navbar-brand">
+        <img className="logo" src={assets.logo} alt="Tomato" />
+        <span>Admin Panel</span>
+      </div>
+      <div className="profile" aria-label="Profile Menu">
+        <img src={assets.profile_image} alt="Admin profile" />
+      </div>
+    </nav>
   );
 };
 

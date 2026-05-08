@@ -117,103 +117,106 @@ const Add = () => {
 
   return (
     <div className="add">
-      <form className="flex-col" onSubmit={handleSubmit}>
-        {/* Upload Image */}
-        <div className="add-img-upload flex-col">
-          <p>Tải ảnh lên</p>
-          <label htmlFor="image">
-            <img src={previewSrc} alt="Xem trước ảnh tải lên" />
-          </label>
-          <input
-            ref={fileInputRef}
-            type="file"
-            id="image"
-            hidden
-            required
-            onChange={handleFileChange}
-            accept="image/png,image/jpeg,image/webp"
-          />
-          {isLoading && (
-            <div className="upload-progress">
-              Đang tải ảnh... {progress}%
-            </div>
-          )}
-        </div>
-
-        {/* Product Name */}
-        <div className="add-product-name flex-col">
-          <label htmlFor="name">Tên sản phẩm</label>
-          <input
-            id="name"
-            type="text"
-            name="name"
-            placeholder="Nhập vào đây"
-            value={data.name}
-            onChange={onChangeHandler}
-            required
-            disabled={isLoading}
-          />
-        </div>
-
-        {/* Product Description */}
-        <div className="add-product-description flex-col">
-          <label htmlFor="description">Mô tả sản phẩm</label>
-          <textarea
-            id="description"
-            name="description"
-            rows="6"
-            placeholder="Viết nội dung ở đây"
-            value={data.description}
-            onChange={onChangeHandler}
-            required
-            disabled={isLoading}
-          />
-        </div>
-
-        {/* Category + Price */}
-        <div className="add-category-price">
-          <div className="add-category flex-col">
-            <label htmlFor="category">Danh mục sản phẩm</label>
-            <select
-              id="category"
-              name="category"
-              value={data.category}
-              onChange={onChangeHandler}
-              required
-              disabled={isLoading}
-            >
-              <option value="Salad">Salad</option>
-              <option value="Rolls">Gỏi cuốn</option>
-              <option value="Deserts">Tráng miệng</option>
-              <option value="Sandwich">Bánh mì Sandwich</option>
-              <option value="Cake">Bánh ngọt</option>
-              <option value="Pure Veg">Món chay</option>
-              <option value="Pasta">Mì Ý</option>
-              <option value="Noodles">Mì</option>
-            </select>
-          </div>
-          <div className="add-price flex-col">
-            <label htmlFor="price">Giá sản phẩm</label>
+      <div className="add-container">
+        <h2>Thêm món ăn mới</h2>
+        <form className="flex-col" onSubmit={handleSubmit}>
+          {/* Upload Image */}
+          <div className="add-img-upload flex-col">
+            <label htmlFor="image">Ảnh sản phẩm</label>
+            <label htmlFor="image">
+              <img src={previewSrc} alt="Xem trước ảnh tải lên" />
+            </label>
             <input
-              id="price"
-              type="number"
-              name="price"
+              ref={fileInputRef}
+              type="file"
+              id="image"
+              hidden
+              required
+              onChange={handleFileChange}
+              accept="image/png,image/jpeg,image/webp"
+            />
+            {isLoading && (
+              <div className="upload-progress">
+                Đang tải ảnh... {progress}%
+              </div>
+            )}
+          </div>
+
+          {/* Product Name */}
+          <div className="add-product-name flex-col">
+            <label htmlFor="name">Tên sản phẩm</label>
+            <input
+              id="name"
+              type="text"
+              name="name"
               placeholder="Nhập vào đây"
-              value={data.price}
+              value={data.name}
               onChange={onChangeHandler}
-              min="0.01"
-              step="0.01"
               required
               disabled={isLoading}
             />
           </div>
-        </div>
 
-        {/* Submit */}
-        <button type="submit" className="add-btn" disabled={isLoading}>
-          {isLoading ? "Đang thêm..." : "Thêm"}
-        </button>
-      </form>
+          {/* Product Description */}
+          <div className="add-product-description flex-col">
+            <label htmlFor="description">Mô tả sản phẩm</label>
+            <textarea
+              id="description"
+              name="description"
+              rows="6"
+              placeholder="Viết nội dung ở đây"
+              value={data.description}
+              onChange={onChangeHandler}
+              required
+              disabled={isLoading}
+            />
+          </div>
+
+          {/* Category + Price */}
+          <div className="add-category-price">
+            <div className="add-category flex-col">
+              <label htmlFor="category">Danh mục sản phẩm</label>
+              <select
+                id="category"
+                name="category"
+                value={data.category}
+                onChange={onChangeHandler}
+                required
+                disabled={isLoading}
+              >
+                <option value="Salad">Salad</option>
+                <option value="Rolls">Gỏi cuốn</option>
+                <option value="Deserts">Tráng miệng</option>
+                <option value="Sandwich">Bánh mì Sandwich</option>
+                <option value="Cake">Bánh ngọt</option>
+                <option value="Pure Veg">Món chay</option>
+                <option value="Pasta">Mì Ý</option>
+                <option value="Noodles">Mì</option>
+              </select>
+            </div>
+            <div className="add-price flex-col">
+              <label htmlFor="price">Giá sản phẩm</label>
+              <input
+                id="price"
+                type="number"
+                name="price"
+                placeholder="Nhập vào đây"
+                value={data.price}
+                onChange={onChangeHandler}
+                min="0.01"
+                step="0.01"
+                required
+                disabled={isLoading}
+              />
+            </div>
+          </div>
+
+          {/* Submit */}
+          <button type="submit" className="add-btn" disabled={isLoading}>
+            {isLoading ? "Đang thêm..." : "Thêm"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

@@ -63,76 +63,79 @@ const Orders = () => {
 
   if (loading) {
     return (
-      <div className="order add">
-        <h3>Trang đơn hàng</h3>
-        <p>Đang tải...</p>
+      <div className="order flex-col">
+        <div className="order-container">
+          <h2>Quản lý đơn hàng</h2>
+          <p>Đang tải dữ liệu...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="order add">
-      <h3>Trang đơn hàng</h3>
-      <div className="order-list">
-        {orders.length === 0 ? (
-          <p>Chưa có đơn hàng nào.</p>
-        ) : (
-          orders.map((order) => (
-            <div key={order._id} className="order-item">
-              <img src={assets.parcel_icon} alt="Parcel" />
+    <div className="order flex-col">
+      <div className="order-container">
+        <h2>Quản lý đơn hàng</h2>
+        <div className="order-list">
+          {orders.length === 0 ? (
+            <p>Chưa có đơn hàng nào.</p>
+          ) : (
+            orders.map((order) => (
+              <div key={order._id} className="order-item">
+                <img src={assets.parcel_icon} alt="Parcel" />
 
-              <div>
-                <p className="order-item-food">
-                  {order.items?.map((item, idx) => (
-                    <span key={`${order._id}-${item.itemId || idx}`}>
-                      {item.name} x {item.quantity}
-                      {idx < order.items.length - 1 ? ", " : ""}
-                    </span>
-                  ))}
-                </p>
-
-                <p className="order-item-name">
-                  {(order.address?.firstName || "") +
-                    " " +
-                    (order.address?.lastName || "")}
-                </p>
-
-                <div className="order-item-address">
-                  <p>
-                    {order.address?.street ? `${order.address.street}, ` : ""}
-                    {order.address?.city ? `${order.address.city}, ` : ""}
-                    {order.address?.state ? `${order.address.state}, ` : ""}
-                    {order.address?.country || ""}
-                    {order.address?.postalCode
-                      ? `, ${order.address.postalCode}`
-                      : ""}
+                <div className="order-item-details">
+                  <p className="order-item-food">
+                    {order.items?.map((item, idx) => (
+                      <span key={`${order._id}-${item.itemId || idx}`}>
+                        {item.name} x {item.quantity}
+                        {idx < order.items.length - 1 ? ", " : ""}
+                      </span>
+                    ))}
                   </p>
+
+                  <p className="order-item-name">
+                    {(order.address?.firstName || "") +
+                      " " +
+                      (order.address?.lastName || "")}
+                  </p>
+
+                  <div className="order-item-address">
+                    <p>
+                      {order.address?.street ? `${order.address.street}, ` : ""}
+                      {order.address?.city ? `${order.address.city}, ` : ""}
+                      {order.address?.state ? `${order.address.state}, ` : ""}
+                      {order.address?.country || ""}
+                      {order.address?.postalCode
+                        ? `, ${order.address.postalCode}`
+                        : ""}
+                    </p>
+                    <p className="order-item-phone">{order.address?.phone}</p>
+                  </div>
                 </div>
 
-                <p className="order-item-phone">{order.address?.phone}</p>
+                <p>Số món: {order.items?.length || 0}</p>
+
+                <p className="order-item-price">
+                  {Number(order.amount).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </p>
+
+                <select
+                  onChange={(e) => statusHandler(e, order._id)}
+                  value={order.status}
+                >
+                  <option value="Đang xử lý món">Đang xử lý món</option>
+                  <option value="Đang giao hàng">Đang giao hàng</option>
+                  <option value="Đã giao">Đã giao</option>
+                  <option value="Đã hủy">Đã hủy</option>
+                </select>
               </div>
-
-              <p>Số món: {order.items?.length || 0}</p>
-
-              <p>
-                {Number(order.amount).toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                })}
-              </p>
-
-              <select
-                onChange={(e) => statusHandler(e, order._id)}
-                value={order.status}
-              >
-                <option value="Đang xử lý món">Đang xử lý món</option>
-                <option value="Đang giao hàng">Đang giao hàng</option>
-                <option value="Đã giao">Đã giao</option>
-                <option value="Đã hủy">Đã hủy</option>
-              </select>
-            </div>
-          ))
-        )}
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

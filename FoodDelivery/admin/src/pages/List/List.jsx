@@ -68,48 +68,48 @@ const List = () => {
   }, []);
 
   return (
-    <div className="list add flex-col">
-      <div className="list-table">
-        <div className="list-table-header">
+    <div className="list flex-col">
+      <div className="list-container">
+        <h2>Danh sách món ăn</h2>
+        <div className="list-table">
           <div className="list-table-format title">
-            <b>Hình ảnh</b>
-            <b>Tên</b>
-            <b>Danh mục</b>
-            <b>Giá</b>
-            <b>Hành động</b>
+            <p>Hình ảnh</p>
+            <p>Tên</p>
+            <p>Danh mục</p>
+            <p>Giá</p>
+            <p>Xóa</p>
           </div>
-          <button className="refresh-btn" onClick={fetchList}>Tải lại</button>
+
+          {loading ? (
+            <div className="list-empty">Đang tải...</div>
+          ) : list.length === 0 ? (
+            <div className="list-empty">Chưa có món nào.</div>
+          ) : (
+            list.map((item) => {
+              const priceNum = Number(item.price);
+              const priceText = Number.isFinite(priceNum)
+                ? priceNum.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })
+                : "—";
+
+              return (
+                <div key={item._id} className="list-table-format">
+                  <img
+                    src={resolveImage(item.image)}
+                    alt={item.name || "Food"}
+                    onError={(e) => (e.currentTarget.src = PLACEHOLDER)}
+                  />
+                  <p>{item.name || "—"}</p>
+                  <p>{item.category || "—"}</p>
+                  <p>{priceText}</p>
+                  <p onClick={() => deleteItem(item._id)} className="cursor">X</p>
+                </div>
+              );
+            })
+          )}
         </div>
-
-        {loading ? (
-          <div className="list-empty">Đang tải...</div>
-        ) : list.length === 0 ? (
-          <div className="list-empty">Chưa có món nào.</div>
-        ) : (
-          list.map((item) => {
-            const priceNum = Number(item.price);
-            const priceText = Number.isFinite(priceNum)
-              ? priceNum.toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                })
-              : "—";
-
-            return (
-              <div key={item._id} className="list-table-format">
-                <img
-                  src={resolveImage(item.image)}
-                  alt={item.name || "Food"}
-                  onError={(e) => (e.currentTarget.src = PLACEHOLDER)}
-                />
-                <p>{item.name || "—"}</p>
-                <p>{item.category || "—"}</p>
-                <p>{priceText}</p>
-                <button onClick={() => deleteItem(item._id)}>Xóa</button>
-              </div>
-            );
-          })
-        )}
       </div>
     </div>
   );

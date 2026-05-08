@@ -1,104 +1,154 @@
-/* Container for the Add page */
 .add {
-    width: 70%;
-    margin: 50px auto; /* Căn giữa cả chiều ngang và thêm khoảng cách trên */
-    color: #333; /* Màu chữ trung tính, dễ đọc hơn */
-    font-size: 16px;
-    background-color: #f9f9f9; /* Màu nền nhẹ nhàng */
-    padding: 20px;
-    border-radius: 8px; /* Bo góc mềm mại */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Thêm hiệu ứng đổ bóng */
+    flex: 1;
+    padding: 3rem;
+    max-width: 900px;
 }
 
-/* Form container */
+.add-container {
+    background: var(--white);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--gray-100);
+}
+
+.add-container h2 {
+    margin-bottom: 2rem;
+    color: var(--text-main);
+    font-size: 1.5rem;
+}
+
 .add form {
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Khoảng cách giữa các phần tử */
+    gap: 1.5rem;
 }
 
-/* Image upload section */
+/* Image Upload Area */
 .add-img-upload {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 10px;
+    gap: 0.75rem;
+}
+
+.add-img-upload label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
 }
 
 .add-img-upload img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover; /* Đảm bảo hình ảnh không bị méo */
-    border: 2px dashed #ccc; /* Đường viền dạng nét đứt */
-    border-radius: 8px;
-    padding: 10px;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 2px dashed var(--gray-200);
+    padding: 4px;
+    transition: var(--transition-fast);
     cursor: pointer;
-    transition: border-color 0.3s ease;
 }
 
 .add-img-upload img:hover {
-    border-color: #007bff; /* Đổi màu viền khi hover */
+    border-color: var(--primary);
+    background: var(--gray-50);
 }
 
-/* Input fields */
-.add input[type="text"],
-.add input[type="number"],
-.add textarea,
-.add select {
+/* Input Fields */
+.add-product-name, .add-product-description {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.add-product-name label, .add-product-description label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.add input, .add textarea, .add select {
     width: 100%;
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #fff;
-    transition: border-color 0.3s ease;
+    padding: 12px 16px;
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    background: var(--gray-50);
+    font-size: 0.95rem;
+    transition: var(--transition-fast);
+    color: var(--text-main);
 }
 
-.add input[type="text"]:focus,
-.add input[type="number"]:focus,
-.add textarea:focus,
-.add select:focus {
-    border-color: #007bff; /* Đổi màu viền khi focus */
+.add input:focus, .add textarea:focus, .add select:focus {
     outline: none;
+    border-color: var(--primary);
+    background: var(--white);
+    box-shadow: 0 0 0 4px var(--primary-glow);
 }
 
-/* Labels and descriptions */
-.add label, .add p {
-    display: block;
-    font-weight: 500;
-    margin-bottom: 5px;
-    color: #555;
-    cursor: pointer;
+.add textarea {
+    resize: vertical;
+    min-height: 120px;
 }
 
-/* Category and price container */
 .add-category-price {
     display: flex;
-    justify-content: space-between;
-    gap: 20px;
+    gap: 2rem;
 }
 
-.add-category,
-.add-price {
+.add-category, .add-price {
     flex: 1;
     display: flex;
     flex-direction: column;
+    gap: 0.75rem;
 }
 
-/* Submit button */
+.add-category label, .add-price label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+/* Submit Button */
 .add-btn {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #fff;
-    background-color: #007bff;
+    margin-top: 1rem;
+    width: fit-content;
+    padding: 12px 40px;
+    background: var(--primary);
+    color: var(--white);
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: var(--transition-fast);
+    box-shadow: 0 4px 10px var(--primary-glow);
 }
 
 .add-btn:hover {
-    background-color: #0056b3; /* Màu đậm hơn khi hover */
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px var(--primary-glow);
+}
+
+.add-btn:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+    .add {
+        padding: 1.5rem;
+        margin-bottom: 80px; /* Space for mobile sidebar */
+    }
+    
+    .add-container {
+        padding: 1.5rem;
+    }
+    
+    .add-category-price {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .add-btn {
+        width: 100%;
+    }
 }
