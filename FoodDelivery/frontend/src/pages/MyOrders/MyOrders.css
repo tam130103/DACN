@@ -1,0 +1,264 @@
+/* Import Google Fonts - ví dụ: Roboto và Open Sans */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
+
+.my-orders {
+    margin: 50px auto;
+    max-width: 1000px;
+    padding: 20px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.my-orders h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #333;
+    text-align: center;
+    margin-bottom: 40px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.my-orders .container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Kiểu dáng cho từng đơn hàng */
+.my-orders-order {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    padding: 15px 20px;
+    border-radius: 10px;
+    display: grid;
+    /* Điều chỉnh tỉ lệ các cột để thẳng hàng hơn: */
+    /* icon | items (tên các món) | amount | count | status | button */
+    grid-template-columns: 50px 3fr 1fr 1fr 1.5fr min-content; /* min-content cho nút để nó chỉ chiếm đủ nội dung */
+    align-items: center; /* Căn giữa các mục theo chiều dọc trong hàng */
+    gap: 15px; /* Khoảng cách giữa các cột */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease-in-out;
+}
+
+.my-orders-order:hover {
+    transform: translateY(-3px);
+}
+
+.my-orders-order img {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+}
+
+/* Các paragraph bên trong đơn hàng */
+.my-orders-order p {
+    font-size: 15px;
+    color: #555;
+    margin-bottom: 30px;
+    white-space: nowrap; /* Giữ text trên một dòng */
+    overflow: hidden; /* Ẩn phần text tràn */
+    text-overflow: ellipsis; /* Hiển thị dấu "..." */
+}
+
+.my-orders-order p:nth-child(2) { /* Danh sách items (food x quantity) */
+    font-weight: 500;
+    color: #333;
+}
+
+.my-orders-order p:nth-child(3) { /* Tổng tiền */
+    font-weight: 600;
+    color: #000;
+    font-size: 16px;
+    text-align: right; /* Căn phải */
+}
+
+.my-orders-order p:nth-child(4) { /* Số lượng mặt hàng (Mặt hàng: X) */
+    text-align: center; /* Căn giữa */
+}
+
+.my-orders-order p:nth-child(5) { /* Trạng thái */
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Căn giữa dấu chấm và text */
+    gap: 5px;
+}
+
+.my-orders-order p span {
+    font-size: 18px;
+    line-height: 1;
+    color: #4CAF50; /* Màu xanh cho trạng thái */
+}
+
+.my-orders-order p b {
+    font-weight: 700;
+    color: #333;
+}
+
+.my-orders-order button {
+    background-color: tomato;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+    font-family: 'Roboto', sans-serif;
+    justify-self: end; /* Đẩy nút sang cuối cột của nó */
+}
+
+.my-orders-order button:hover {
+    background-color: #ff6347;
+}
+
+/* Thông báo tải/lỗi/không có đơn hàng */
+.my-orders .container p {
+    text-align: center;
+    font-size: 17px;
+    color: #777;
+    margin-top: 30px;
+}
+
+.my-orders .error-message {
+    background-color: #ffebe9;
+    color: #cc0000;
+    border: 1px solid #ffbbbb;
+    padding: 12px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Open Sans', sans-serif;
+}
+
+
+/* Responsive Design for My Orders */
+
+/* Màn hình từ 900px trở xuống */
+@media (max-width: 900px) {
+    .my-orders-order {
+        /* Chuyển thành 2 hàng để các phần tử có đủ không gian */
+        grid-template-columns: 45px 2.5fr 1fr 1.5fr; /* Hàng đầu: icon, items, amount, count/status */
+        grid-template-rows: auto auto; /* Hàng thứ hai cho phần còn lại */
+        gap: 10px 15px; /* Giảm khoảng cách */
+        padding: 15px;
+    }
+
+    .my-orders-order img {
+        grid-row: span 2; /* Icon chiếm 2 hàng */
+        align-self: start; /* Căn icon lên trên */
+    }
+
+    .my-orders-order p:nth-child(2) { /* Items (food x quantity) */
+        grid-column: 2 / span 3; /* Chiếm 3 cột còn lại của hàng 1 */
+        white-space: normal; /* Cho phép text xuống dòng */
+        overflow: visible; /* Không ẩn text */
+        text-overflow: clip; /* Bỏ dấu ... */
+    }
+
+    .my-orders-order p:nth-child(3) { /* Amount */
+        grid-column: 2 / 3; /* Cột 2 của hàng 2 */
+        text-align: left; /* Căn trái */
+    }
+
+    .my-orders-order p:nth-child(4) { /* Item count */
+        grid-column: 3 / 4; /* Cột 3 của hàng 2 */
+        text-align: left; /* Căn trái */
+    }
+
+    .my-orders-order p:nth-child(5) { /* Status */
+        grid-column: 4 / 5; /* Cột 4 của hàng 2 */
+        text-align: left; /* Căn trái */
+        justify-content: flex-start; /* Căn trái dấu chấm và text */
+    }
+    
+    .my-orders-order button {
+        grid-column: 5 / 6; /* Nút nằm ở cột 5 của hàng 1 */
+        grid-row: 1 / span 2; /* Nút chiếm 2 hàng */
+        align-self: center; /* Căn giữa theo chiều dọc */
+        justify-self: end; /* Đẩy nút sang cuối cột của nó */
+        width: fit-content; /* Chiều rộng vừa đủ nội dung */
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+}
+
+/* Màn hình từ 768px trở xuống */
+@media (max-width: 768px) {
+    .my-orders {
+        margin: 30px auto;
+        padding: 15px;
+    }
+
+    .my-orders h2 {
+        font-size: 28px;
+        margin-bottom: 30px;
+    }
+
+    .my-orders-order {
+        grid-template-columns: 1fr; /* Một cột duy nhất */
+        align-items: flex-start;
+        padding: 15px;
+        gap: 10px;
+    }
+
+    .my-orders-order img {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 0;
+        grid-row: auto; /* Đặt lại row span */
+    }
+
+    .my-orders-order p,
+    .my-orders-order button {
+        width: 100%; /* Chiếm toàn bộ chiều rộng */
+        text-align: left; /* Căn trái */
+        white-space: normal; /* Cho phép xuống dòng */
+        overflow: visible;
+        text-overflow: clip;
+    }
+
+    .my-orders-order p:nth-child(2), /* Items */
+    .my-orders-order p:nth-child(3), /* Amount */
+    .my-orders-order p:nth-child(4), /* Item count */
+    .my-orders-order p:nth-child(5) { /* Status */
+        grid-column: auto; /* Đặt lại cột */
+        text-align: left;
+        justify-content: flex-start;
+    }
+
+    .my-orders-order button {
+        margin-top: 10px;
+        text-align: center; /* Nút theo dõi vẫn căn giữa */
+        justify-self: stretch; /* Mở rộng nút ra toàn bộ chiều rộng */
+        grid-column: auto; /* Đặt lại cột */
+        grid-row: auto; /* Đặt lại hàng */
+    }
+}
+
+/* Màn hình từ 480px trở xuống (điện thoại nhỏ) */
+@media (max-width: 480px) {
+    .my-orders h2 {
+        font-size: 24px;
+    }
+
+    .my-orders-order p {
+        font-size: 14px;
+    }
+
+    .my-orders-order button {
+        font-size: 13px;
+        padding: 8px 10px;
+    }
+
+    .my-orders-order img {
+        width: 35px;
+        height: 35px;
+    }
+
+    .my-orders-order {
+        padding: 10px;
+    }
+}

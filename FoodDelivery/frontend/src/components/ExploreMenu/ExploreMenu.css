@@ -1,0 +1,159 @@
+/* CSS Variables */
+:root {
+    /* Colors */
+    --primary: #66ff66;
+    --text-dark: #262626;
+    --text-gray: #747474;
+    --border-light: #e0e0e0;
+    
+    /* Spacing */
+    --gap-sm: 10px;
+    --gap-md: 20px;
+    --gap-lg: 30px;
+    
+    /* Typography */
+    --font-size-base: 16px;
+    --font-size-lg: max(1.4vw, 16px);
+    --font-weight-medium: 500;
+    
+    /* Border */
+    --border-active: 4px solid var(--primary);
+    
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+}
+
+/* Main Container */
+.explore-menu {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-md);
+    padding: var(--gap-md) 0;
+    animation: slideIn 0.5s ease-out;
+}
+
+/* Heading */
+.explore-menu h1 {
+    color: var(--text-dark);
+    font-weight: var(--font-weight-medium);
+    margin: 0;
+}
+
+/* Description Text */
+.explore-menu-text {
+    max-width: 60%;
+    color: var(--text-gray);
+    line-height: 1.6;
+}
+
+/* Menu List Container */
+.explore-menu-list {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--gap-lg);
+    margin: var(--gap-md) 0;
+    padding: var(--gap-sm) 0;
+    overflow-x: scroll;
+    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;  /* IE/Edge */
+}
+
+/* Hide scrollbar */
+.explore-menu-list::-webkit-scrollbar {
+    display: none;
+}
+
+/* Menu Item */
+.explore-menu-list-item {
+    flex-shrink: 0;
+    text-align: center;
+    transition: transform var(--transition-fast);
+}
+
+.explore-menu-list-item:hover {
+    transform: translateY(-5px);
+}
+
+/* Menu Item Image */
+.explore-menu-list-item img {
+    width: clamp(80px, 7.5vw, 120px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform var(--transition-fast);
+}
+
+.explore-menu-list-item img:hover {
+    transform: scale(1.05);
+}
+
+/* Active Item Style */
+.explore-menu-list-item .active {
+    border: var(--border-active);
+    padding: 2px;
+    box-shadow: 0 4px 12px rgba(102, 255, 102, 0.2);
+}
+
+/* Menu Item Text */
+.explore-menu-list-item p {
+    margin-top: var(--gap-sm);
+    color: var(--text-gray);
+    font-size: var(--font-size-lg);
+    cursor: pointer;
+    transition: color var(--transition-fast);
+}
+
+.explore-menu-list-item:hover p {
+    color: var(--text-dark);
+}
+
+/* Divider */
+.explore-menu hr {
+    margin: var(--gap-sm) 0;
+    height: 2px;
+    background-color: var(--border-light);
+    border: none;
+    border-radius: 2px;
+}
+
+/* Responsive Design */
+@media (max-width: 1050px) {
+    .explore-menu-text {
+        max-width: 100%;
+        font-size: var(--font-size-base);
+    }
+
+    .explore-menu-list-item p {
+        font-size: var(--font-size-base);
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --gap-lg: 20px;
+        --gap-md: 15px;
+    }
+
+    .explore-menu-list {
+        padding: var(--gap-sm);
+        margin: var(--gap-sm) -15px;
+        width: calc(100% + 30px);
+    }
+
+    .explore-menu-list-item img {
+        width: 70px;
+    }
+}
+
+/* Animation */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

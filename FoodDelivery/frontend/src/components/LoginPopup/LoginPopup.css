@@ -1,0 +1,149 @@
+.login-popup {
+    position: fixed;
+    z-index: 1001;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(40, 40, 40, 0.55);
+    display: grid;
+    animation: fadein-bg 0.4s;
+}
+
+@keyframes fadein-bg {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.login-popup-container {
+    place-self: center;
+    width: max(23vw, 340px);
+    max-width: 95vw;
+    min-width: 280px;
+    color: #444;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    padding: 32px 32px 28px 32px;
+    border-radius: 18px;
+    font-size: 15px;
+    box-shadow: 0 8px 32px rgba(80,0,120,0.13);
+    animation: fadein 0.5s;
+}
+
+@keyframes fadein {
+    from { opacity: 0; transform: scale(0.92);}
+    to { opacity: 1; transform: scale(1);}
+}
+
+.login-popup-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #222;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.login-popup-title img {
+    width: 20px;
+    cursor: pointer;
+    filter: grayscale(0.5);
+    transition: filter 0.2s, transform 0.2s;
+}
+
+.login-popup-title img:hover {
+    filter: grayscale(0) brightness(1.2);
+    transform: scale(1.15) rotate(90deg);
+}
+
+.login-popup-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.login-popup-inputs input {
+    outline: none;
+    padding: 12px 16px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 7px;
+    font-size: 15px;
+    background: #faf8ff;
+    transition: border 0.2s, background 0.2s;
+}
+
+.login-popup-inputs input:focus {
+    border: 1.5px solid #a259ff;
+    background: #f3eaff;
+}
+
+.login-popup-container button {
+    outline: none;
+    cursor: pointer;
+    border: none;
+    padding: 0.9rem 2.2rem;
+    margin: 0;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 700;
+    border-radius: 500px;
+    background: linear-gradient(90deg, #a259ff 0%, #66ff66 100%);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(162, 89, 255, 0.10);
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.login-popup-container button:hover {
+    background: linear-gradient(90deg, #66ff66 0%, #a259ff 100%);
+    transform: scale(1.04);
+    box-shadow: 0 4px 16px rgba(162, 89, 255, 0.18);
+}
+
+.login-popup-condition {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 7px;
+    margin-top: -10px;
+    font-size: 14px;
+    color: #888;
+}
+
+.login-popup-condition input {
+    margin-top: 4px;
+}
+
+.login-popup p {
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+}
+
+.login-popup p span {
+    font-weight: 700;
+    color: #66ff66;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.login-popup p span:hover {
+    color: #a259ff;
+}
+
+@media (max-width: 600px) {
+    .login-popup-container {
+        padding: 18px 8px 14px 8px;
+        border-radius: 10px;
+        font-size: 13px;
+        gap: 14px;
+    }
+    .login-popup-title {
+        font-size: 1rem;
+    }
+    .login-popup-container button {
+        font-size: 15px;
+        padding: 0.7rem 1.2rem;
+    }
+}
