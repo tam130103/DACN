@@ -1,0 +1,75 @@
+.list-table {
+  width: 100%;
+  max-width: 1200px; /* Giới hạn chiều rộng tối đa */
+  margin: 20px auto; /* Căn giữa bảng */
+  border-collapse: collapse;
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.list-table-format {
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr 1fr 1fr; /* Căn đều các cột */
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.3s ease;
+  text-align: center; /* Căn giữa nội dung */
+}
+
+.list-table-format:hover {
+  background-color: #f9f9f9;
+}
+
+.list-table-format.title {
+  font-weight: bold;
+  background-color: #007bff;
+  color: white;
+  text-transform: uppercase;
+  padding: 20px;
+}
+
+.list-table-format img {
+  width: 60px; /* Tăng kích thước hình ảnh */
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #ddd;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.list-table-format img:hover {
+  transform: scale(1.1);
+  border-color: #007bff;
+}
+
+.list-table-format button {
+  padding: 8px 15px;
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.list-table-format button:hover {
+  background-color: #ff1a1a;
+  transform: scale(1.05);
+}
+
+.list-table-format p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+  text-align: center; /* Căn giữa nội dung văn bản */
+}
+
+.list-table-format.title b {
+  font-size: 16px;
+  color: white;
+}

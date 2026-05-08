@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # -------------------- BACKEND SERVICE --------------------
+  backend:
+    container_name: food_backend
+    # 🟢 KHỐI BUILD ĐÃ ĐƯỢC THÊM LẠI
+    build: 
+      context: ./backend 
+      dockerfile: Dockerfile
+    # 🟢 KHỐI env_file ĐÃ ĐƯỢC THÊM LẠI
+    env_file:
+      - ./backend/.env
+    ports:
+      - "4000:10000" # Mapp cổng 10000 (container) ra cổng 4000 (host)
+    environment:
+      # Sửa URL redirect của Stripe
+      FRONTEND_URL: http://localhost
+      ADMIN_URL: http://localhost:8080
+
+  # -------------------- FRONTEND SERVICE (CLIENT) --------------------
+  frontend:
+    container_name: food_frontend
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+      args: 
+        # Cấu hình gọi API từ trình duyệt Host
+        - VITE_API_URL=http://localhost:4000 
+    ports:
+      - "80:80" 
+    depends_on:
+      - backend
+
+  # -------------------- ADMIN SERVICE (DASHBOARD) --------------------
+  admin:
+    container_name: food_admin
+    build: 
+      context: ./admin
+      dockerfile: Dockerfile
+      args:
+        # Cấu hình gọi API từ trình duyệt Host
+        - VITE_API_URL=http://localhost:4000 
+    ports:
+      - "8080:80" 
+    depends_on:
+      - backend

@@ -1,0 +1,68 @@
+/* Sidebar container */
+.sidebar {
+    width: 20%; /* Tăng chiều rộng để phù hợp với thiết kế hiện đại */
+    min-height: 100vh;
+    border-right: 1px solid #ddd; /* Chỉ thêm đường viền bên phải */
+    background-color: #f4f4f4; /* Màu nền nhẹ hơn */
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Thêm hiệu ứng đổ bóng */
+}
+
+/* Sidebar options container */
+.sidebar-options {
+    margin-top: 30px; /* Thêm khoảng cách phía trên */
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Khoảng cách giữa các tùy chọn */
+}
+
+/* Individual sidebar option */
+.sidebar-option {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Khoảng cách giữa biểu tượng và văn bản */
+    font-size: 16px;
+    font-weight: 500;
+    color: #555; /* Màu chữ trung tính */
+    padding: 10px 15px;
+    border-radius: 5px; /* Bo góc mềm mại hơn */
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+}
+
+/* Hover effect for sidebar option */
+.sidebar-option:hover {
+    background-color: #e6e6e6; /* Màu nền khi hover */
+    color: #333; /* Màu chữ đậm hơn khi hover */
+    transform: translateX(5px); /* Hiệu ứng di chuyển nhẹ khi hover */
+}
+
+/* Active sidebar option */
+.sidebar-option.active {
+    background-color: #d1d1d1; /* Màu nền cho tùy chọn đang được chọn */
+    color: #000;
+    font-weight: 600;
+    border-left: 4px solid #007bff; /* Thêm đường viền màu xanh bên trái */
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%; /* Chiếm toàn bộ chiều rộng màn hình */
+        border-right: none;
+        padding: 10px;
+        box-shadow: none; /* Loại bỏ đổ bóng trên màn hình nhỏ */
+    }
+
+    .sidebar-options {
+        margin-top: 20px;
+        gap: 10px; /* Giảm khoảng cách giữa các tùy chọn */
+    }
+
+    .sidebar-option {
+        font-size: 14px; /* Giảm kích thước chữ */
+        padding: 8px 10px;
+    }
+}

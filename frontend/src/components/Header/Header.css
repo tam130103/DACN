@@ -1,0 +1,178 @@
+/* CSS Variables */
+:root {
+    --primary: #a259ff;
+    --primary-dark: #6c2eb7;
+    --white: #ffffff;
+    --light-purple: #f3eaff;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 12px rgba(162, 89, 255, 0.1);
+    --shadow-md: 0 4px 24px rgba(80, 0, 120, 0.1);
+    --shadow-lg: 0 4px 24px rgba(162, 89, 255, 0.18);
+    
+    /* Text Shadows */
+    --text-shadow-sm: 0 1px 8px rgba(80, 0, 120, 0.1);
+    --text-shadow-lg: 0 2px 12px rgba(80, 0, 120, 0.18);
+    
+    /* Gradients */
+    --gradient-overlay: linear-gradient(120deg, 
+        rgba(108, 46, 183, 0.55) 0%, 
+        rgba(162, 89, 255, 0.35) 100%
+    );
+    --gradient-button: linear-gradient(90deg, 
+        var(--primary) 0%, 
+        var(--primary-dark) 100%
+    );
+    --gradient-button-hover: linear-gradient(90deg, 
+        var(--primary-dark) 0%, 
+        var(--primary) 100%
+    );
+}
+
+/* Header Container */
+.header {
+    margin: 90px 0 30px;
+    height: 34vw;
+    position: relative;
+    background: url('/header_img.png') no-repeat center;
+    background-size: cover;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+/* Overlay Gradient */
+.header::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-overlay);
+    z-index: 1;
+}
+
+/* Header Content Section */
+.header-contents {
+    position: absolute;
+    bottom: 10%;
+    left: 6vw;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2vw;
+    max-width: 50%;
+    animation: fadeIn 2s;
+}
+
+/* Header Typography */
+.header-contents h2 {
+    color: var(--white);
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    text-shadow: var(--text-shadow-lg);
+}
+
+.header-contents p {
+    color: var(--light-purple);
+    font-size: clamp(16px, 1.2vw, 20px);
+    margin-bottom: 18px;
+    text-shadow: var(--text-shadow-sm);
+}
+
+/* Call-to-Action Button */
+.header-contents button {
+    padding: 1rem 2.5rem;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: inherit;
+    color: var(--white);
+    background: var(--gradient-button);
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.header-contents button:hover {
+    background: var(--gradient-button-hover);
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Button Hover Effect */
+.header-contents button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.08);
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1;
+}
+
+.header-contents button:hover::before {
+    opacity: 1;
+}
+
+.header-contents button span {
+    position: relative;
+    z-index: 2;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Media Queries */
+@media (max-width: 1050px) {
+    .header {
+        height: 50vw;
+    }
+
+    .header-contents {
+        max-width: 80%;
+        left: 10vw;
+        gap: 3vw;
+    }
+
+    .header-contents h2 {
+        font-size: clamp(22px, 3vw, 32px);
+    }
+}
+
+@media (max-width: 750px) {
+    .header {
+        height: 60vw;
+        margin: 16px auto;
+        border-radius: 14px;
+    }
+
+    .header-contents {
+        max-width: 96%;
+        left: 2vw;
+        bottom: 8%;
+        gap: 2vw;
+    }
+
+    .header-contents p {
+        display: none;
+    }
+
+    .header-contents button {
+        padding: 2vw 5vw;
+        font-size: 15px;
+    }
+}
