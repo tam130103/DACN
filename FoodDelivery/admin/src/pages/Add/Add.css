@@ -63,10 +63,12 @@
 }
 
 /* Labels and descriptions */
-.add p {
+.add label, .add p {
+    display: block;
     font-weight: 500;
     margin-bottom: 5px;
     color: #555;
+    cursor: pointer;
 }
 
 /* Category and price container */

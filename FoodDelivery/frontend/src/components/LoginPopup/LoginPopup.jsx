@@ -62,69 +62,87 @@ const LoginPopup = ({ setShowLogin }) => {
       <form onSubmit={onSubmit} className="login-popup-container">
         <div className="login-popup-title">
           <h2>{currState}</h2>
-          <img
-            onClick={() => setShowLogin?.(false)}
-            src={assets?.cross_icon || ""}
-            alt="Đóng"
-          />
+          <button 
+            onClick={() => setShowLogin?.(false)} 
+            className="close-button"
+            aria-label="Đóng cửa sổ"
+          >
+            <img
+              src={assets?.cross_icon || ""}
+              alt=""
+              aria-hidden="true"
+            />
+          </button>
         </div>
 
-        {errMsg && <div className="error-message">{errMsg}</div>}
+        {errMsg && <div className="error-message" role="alert">{errMsg}</div>}
 
         <div className="login-popup-inputs">
           {currState === "Đăng ký" && (
+            <div className="input-group">
+              <label htmlFor="name" className="sr-only">Tên của bạn</label>
+              <input
+                id="name"
+                name="name"
+                onChange={onChangeHandle}
+                value={data.name}
+                type="text"
+                placeholder="Tên của bạn"
+                required
+              />
+            </div>
+          )}
+          <div className="input-group">
+            <label htmlFor="email" className="sr-only">Email của bạn</label>
             <input
-              name="name"
+              id="email"
+              name="email"
               onChange={onChangeHandle}
-              value={data.name}
-              type="text"
-              placeholder="Tên của bạn"
+              value={data.email}
+              type="email"
+              placeholder="Email của bạn"
               required
             />
-          )}
-          <input
-            name="email"
-            onChange={onChangeHandle}
-            value={data.email}
-            type="email"
-            placeholder="Email của bạn"
-            required
-          />
-          <input
-            name="password"
-            onChange={onChangeHandle}
-            value={data.password}
-            type="password"
-            placeholder="Mật khẩu"
-            required
-          />
+          </div>
+          <div className="input-group">
+            <label htmlFor="password" className="sr-only">Mật khẩu</label>
+            <input
+              id="password"
+              name="password"
+              onChange={onChangeHandle}
+              value={data.password}
+              type="password"
+              placeholder="Mật khẩu"
+              required
+            />
+          </div>
         </div>
 
-        <button type="submit" disabled={isLoading}>
+        <button type="submit" className="submit-button" disabled={isLoading}>
           {isLoading
-            ? "Đang xử lý..."
+            ? "Đang xử lý…"
             : currState === "Đăng ký"
             ? "Tạo tài khoản"
             : "Đăng nhập"}
         </button>
 
         <div className="login-popup-condition">
-          <input type="checkbox" required />
-          <p>
+          <input type="checkbox" id="terms" required />
+          <label htmlFor="terms">
             Bằng việc tiếp tục, bạn đồng ý với các Điều khoản và Điều kiện của
             chúng tôi.
-          </p>
+          </label>
         </div>
 
         {currState === "Đăng nhập" ? (
           <p>
             Tạo tài khoản mới?{" "}
-            <span onClick={() => setCurrState("Đăng ký")}>Nhấn vào đây</span>
+            <button type="button" className="link-button" onClick={() => setCurrState("Đăng ký")}>Nhấn vào đây</button>
           </p>
         ) : (
           <p>
             Đã có tài khoản?{" "}
-            <span onClick={() => setCurrState("Đăng nhập")}>Nhấn vào đây</span>
+            <button type="button" className="link-button" onClick={() => setCurrState("Đăng nhập")}>Nhấn vào đây</button>
           </p>
         )}
       </form>

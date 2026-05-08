@@ -16,6 +16,7 @@ const Verify = () => {
     const run = async () => {
       const success = params.get("success") === "true";
       const orderId = params.get("orderId");
+      const sessionId = params.get("session_id");
 
       if (!orderId) {
         setMsg("Thiếu orderId. Quay về trang chủ...");
@@ -24,11 +25,9 @@ const Verify = () => {
       }
 
       try {
-        // Nếu backend dùng Bearer thì đổi headers bên dưới cho khớp:
-        // { headers: { Authorization: `Bearer ${token}` } }
         const res = await api.post(
           "/api/order/verify",
-          { success, orderId },
+          { success, orderId, sessionId },
           { headers: { token } }
         );
 

@@ -43,7 +43,7 @@ const StoreContextProvider = (props) => {
     });
     if (token) {
       try {
-        await api.post("/api/cart/add", { itemId }, { headers: { token } });
+        await api.post("/api/cart/add", { itemId }, { headers: { Authorization: `Bearer ${token}` } });
         console.log("Item added to cart (backend):", itemId);
       } catch (error) {
         console.error("❌ Error adding item to cart:", error);
@@ -65,7 +65,7 @@ const StoreContextProvider = (props) => {
     });
     if (token) {
       try {
-        await api.post("/api/cart/remove", { itemId }, { headers: { token } });
+        await api.post("/api/cart/remove", { itemId }, { headers: { Authorization: `Bearer ${token}` } });
         console.log("Item removed from cart (backend):", itemId);
       } catch (error) {
         console.error("❌ Error removing item from cart:", error);
@@ -79,7 +79,7 @@ const StoreContextProvider = (props) => {
   // Hàm tải dữ liệu giỏ hàng từ backend
   const loadCartData = async (token) => {
     try {
-      const response = await api.post("/api/cart/get", {}, { headers: { token } });
+      const response = await api.post("/api/cart/get", {}, { headers: { Authorization: `Bearer ${token}` } });
       if (response.data.success) {
         setCartItems(response.data.cartData);
         console.log("Cart data loaded:", response.data.cartData);

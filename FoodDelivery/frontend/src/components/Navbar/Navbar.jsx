@@ -81,45 +81,52 @@ const Navbar = ({ setShowLogin }) => {
 
     return (
         <div className={`navbar${scrolled ? " scrolled" : ""}`}>
-            <Link to="/" onClick={() => setMenu('home')} className="navbar-logo">
-                <img src={assets?.logo} alt="Logo" className="logo" /> {/* Giữ nguyên "Logo" hoặc đổi thành "Biểu trưng" tùy ý */}
+            <Link to="/" onClick={() => setMenu('home')} className="navbar-logo" aria-label="Food Delivery Home">
+                <img src={assets?.logo} alt="" className="logo" aria-hidden="true" />
+                <span className="sr-only">Food Delivery</span>
             </Link>
 
-            <nav className="navbar-menu">
+            <ul className="navbar-menu" role="menubar">
                 {menuItems.map(({ name, label }) => (
-                    <li
-                        key={name}
-                        className={menu === name ? "active" : ""}
-                        onClick={() => handleMenuClick({ name, label })}
-                    >
-                        {label}
+                    <li key={name} role="none">
+                        <button
+                            role="menuitem"
+                            className={menu === name ? "active" : ""}
+                            onClick={() => handleMenuClick({ name, label })}
+                        >
+                            {label}
+                        </button>
                     </li>
                 ))}
-            </nav>
+            </ul>
 
             <div className="navbar-right">
                 <button className="icon-button" aria-label="Tìm kiếm">
-                    <img src={assets?.search_icon} alt="Tìm kiếm" />
+                    <img src={assets?.search_icon} alt="" aria-hidden="true" />
                 </button>
 
-               <Link to="/cart" className="navbar-search_icon">
-                    <img src={assets?.basket_icon} alt="Giỏ hàng" />
+               <Link to="/cart" className="navbar-search_icon" aria-label="Giỏ hàng">
+                    <img src={assets?.basket_icon} alt="" aria-hidden="true" />
                     {getTotalCartAmount?.() > 0 && <div className="dot" />}
-                     </Link>
+               </Link>
                
 
                 {token ? (
                     <div className="navbar-profile">
                         <img src={assets.profile_icon} alt="Hồ sơ" />
-                        <ul className="nav-profile-dropdown">
-                            <li onClick={()=>navigate('/myorders')}>
-                                <img src={assets.bag_icon} alt="Đơn hàng" />
-                                Đơn hàng
+                        <ul className="nav-profile-dropdown" role="menu">
+                            <li role="none">
+                                <button role="menuitem" onClick={()=>navigate('/myorders')}>
+                                    <img src={assets.bag_icon} alt="" aria-hidden="true" />
+                                    <p>Đơn hàng</p>
+                                </button>
                             </li>
                             <hr />
-                            <li onClick={handleLogout}>
-                                <img src={assets.logout_icon} alt="Đăng xuất" />
-                                Đăng xuất
+                            <li role="none">
+                                <button role="menuitem" onClick={handleLogout}>
+                                    <img src={assets.logout_icon} alt="" aria-hidden="true" />
+                                    <p>Đăng xuất</p>
+                                </button>
                             </li>
                         </ul>
                     </div>

@@ -144,7 +144,7 @@ export const placeOrder = async (req, res) => {
     const session = await stripe.checkout.sessions.create({
       line_items,
       mode: "payment",
-      success_url: `${FRONTEND_URL}/verify?success=true&orderId=${newOrder._id}`,
+      success_url: `${FRONTEND_URL}/verify?success=true&orderId=${newOrder._id}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${FRONTEND_URL}/verify?success=false&orderId=${newOrder._id}`,
     });
 
@@ -169,7 +169,7 @@ export const placeOrder = async (req, res) => {
  */
 export const verifyOrder = async (req, res) => {
   try {
-    const { orderId, success } = req.body;
+    const { orderId, success, sessionId } = req.body;
     if (!orderId) {
       return res.status(400).json({ success: false, message: "ID đơn hàng là bắt buộc." });
     }
@@ -180,9 +180,21 @@ export const verifyOrder = async (req, res) => {
     }
 
     if (isTrue(success)) {
-      await orderModel.findByIdAndUpdate(orderId, { payment: true });
-      return res.json({ success: true, message: "Thanh toán thành công." });
+      // ---- Bảo mật: Xác thực session_id với Stripe ----
+      if (!sessionId) {
+        return res.status(400).json({ success: false, message: "Thiếu sessionId để xác thực thanh toán." });
+      }
+
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      if (session.payment_status === "paid") {
+        await orderModel.findByIdAndUpdate(orderId, { payment: true });
+        return res.json({ success: true, message: "Thanh toán thành công." });
+      } else {
+        // Nếu success=true nhưng Stripe chưa báo paid (có thể do lỗi hoặc gian lận)
+        return res.status(400).json({ success: false, message: "Thanh toán chưa được hoàn tất trên Stripe." });
+      }
     } else {
+      // Khách hàng bấm cancel hoặc lỗi từ phía Stripe
       await orderModel.findByIdAndDelete(orderId);
       return res.json({ success: false, message: "Thanh toán thất bại, đơn hàng đã bị hủy." });
     }

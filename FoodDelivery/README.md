@@ -88,8 +88,5 @@ cd admin && npm run dev
 - **Admin Panel**: Add/Remove Food Items, Real-time Order Status Updates, Order List View.
 - **Backend**: Image upload to Cloudinary, JWT Token management, CORS Whitelisting.
 
-🔗 **Demo Website:** dacn-three.vercel.app  
-🔗 **GitHub Repo:** [https://github.com/tam130103/DACN](https://github.com/tam130103/DACN)
-
 ---
 *Created as part of the DACN Graduation Project.*

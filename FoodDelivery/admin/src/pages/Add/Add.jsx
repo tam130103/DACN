@@ -142,8 +142,9 @@ const Add = () => {
 
         {/* Product Name */}
         <div className="add-product-name flex-col">
-          <p>Tên sản phẩm</p>
+          <label htmlFor="name">Tên sản phẩm</label>
           <input
+            id="name"
             type="text"
             name="name"
             placeholder="Nhập vào đây"
@@ -156,8 +157,9 @@ const Add = () => {
 
         {/* Product Description */}
         <div className="add-product-description flex-col">
-          <p>Mô tả sản phẩm</p>
+          <label htmlFor="description">Mô tả sản phẩm</label>
           <textarea
+            id="description"
             name="description"
             rows="6"
             placeholder="Viết nội dung ở đây"
@@ -171,8 +173,9 @@ const Add = () => {
         {/* Category + Price */}
         <div className="add-category-price">
           <div className="add-category flex-col">
-            <p>Danh mục sản phẩm</p>
+            <label htmlFor="category">Danh mục sản phẩm</label>
             <select
+              id="category"
               name="category"
               value={data.category}
               onChange={onChangeHandler}
@@ -190,8 +193,9 @@ const Add = () => {
             </select>
           </div>
           <div className="add-price flex-col">
-            <p>Giá sản phẩm</p>
+            <label htmlFor="price">Giá sản phẩm</label>
             <input
+              id="price"
               type="number"
               name="price"
               placeholder="Nhập vào đây"
