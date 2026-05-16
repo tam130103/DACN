@@ -43,3 +43,21 @@ backend/node_modules/
 # Frontend/Admin Specific
 frontend/node_modules/
 admin/node_modules/
+
+# ============= AGENTIC TOOLS (SKILLS & MCP) =============
+.gemini/
+.antigravity/
+.mcp/
+.agent/
+.agents/
+.claude/
+brain/
+knowledge/
+artifacts/
+scratch/
+mcp_servers/
+CLAUDE.md
+AGENTS.md
+plans/
+.aider*
+
