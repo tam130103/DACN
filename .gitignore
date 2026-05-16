@@ -1,6 +1,10 @@
 # Node.js
 node_modules/
 npm-debug.log*
+
+# Root-level leftovers
+/package-lock.json
+/node_modules/
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*

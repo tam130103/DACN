@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config.js";
 import { connectDB } from "./config/db.js";
+import rateLimit from "express-rate-limit";
 
 import foodRouter from "./routes/foodRoute.js";
 import userRouter from "./routes/userRoute.js";
@@ -54,6 +55,15 @@ const corsMw = cors({
 app.use(corsMw);
 app.options(/.*/, corsMw); // preflight cho mọi route
 
+/* -------------------- Rate limiting -------------------- */
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { success: false, message: "Quá nhiều yêu cầu. Vui lòng thử lại sau 15 phút." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 /* -------------------- Common middlewares -------------------- */
 app.use(express.json());
 app.use("/images", express.static("uploads", { maxAge: "1d", etag: true }));
@@ -70,7 +80,7 @@ app.get("/", (_req, res) => res.send("API Working"));
 
     // API routes
     app.use("/api/food",  foodRouter);
-    app.use("/api/user",  userRouter);
+    app.use("/api/user",  authLimiter, userRouter);
     app.use("/api/cart",  cartRouter);
     app.use("/api/order", orderRouter);
 

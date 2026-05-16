@@ -15,8 +15,15 @@ services:
       - "4000:10000" # Mapp cổng 10000 (container) ra cổng 4000 (host)
     environment:
       # Sửa URL redirect của Stripe
+      # Có thể ghi đè các biến này qua env_file hoặc biến môi trường host
       FRONTEND_URL: http://localhost
       ADMIN_URL: http://localhost:8080
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:10000/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
   # -------------------- FRONTEND SERVICE (CLIENT) --------------------
   frontend:
@@ -30,7 +37,8 @@ services:
     ports:
       - "80:80" 
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
   # -------------------- ADMIN SERVICE (DASHBOARD) --------------------
   admin:
@@ -40,8 +48,11 @@ services:
       dockerfile: Dockerfile
       args:
         # Cấu hình gọi API từ trình duyệt Host
-        - VITE_API_URL=http://localhost:4000 
+        - VITE_API_URL=http://localhost:4000
+        # ADMIN_API_KEY phải khớp với backend/.env (ghi đè qua env_file hoặc biến host)
+        - VITE_ADMIN_API_KEY=${ADMIN_API_KEY:-dev-admin-key}
     ports:
       - "8080:80" 
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy

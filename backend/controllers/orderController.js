@@ -18,7 +18,7 @@ const isTrue = (v) => v === true || v === "true" || v === 1 || v === "1";
 export const placeOrder = async (req, res) => {
   try {
     const userId = req.userId;
-    const { items, amount: clientAmount, address } = req.body;
+    const { items, address } = req.body;
 
     if (!userId) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
@@ -90,10 +90,6 @@ export const placeOrder = async (req, res) => {
     const serverTotalMinor = itemsTotalMinor + SHIPPING_FEE_MINOR;
     const serverTotal = serverTotalMinor / 100;
 
-    if (typeof clientAmount === "number" && Math.abs(Number(clientAmount) - serverTotal) > 0.01) {
-      console.warn("⚠️ Client amount mismatch. client:", clientAmount, "server:", serverTotal);
-    }
-
     const newOrder = new orderModel({
       userId,
       items: populatedItems,
@@ -144,7 +140,6 @@ export const placeOrder = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Đã xảy ra lỗi server khi đặt hàng. Vui lòng thử lại.",
-      error: err.message,
     });
   }
 };
@@ -182,7 +177,6 @@ export const verifyOrder = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Đã xảy ra lỗi server khi xác minh đơn hàng. Vui lòng thử lại.",
-      error: err.message,
     });
   }
 };
@@ -200,7 +194,6 @@ export const userOrders = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Đã xảy ra lỗi server khi tải đơn hàng.",
-      error: err.message,
     });
   }
 };
@@ -211,7 +204,7 @@ export const listOrders = async (_req, res) => {
     return res.json({ success: true, data: orders });
   } catch (err) {
     console.error("💥 listOrders error:", err);
-    return res.status(500).json({ success: false, message: "Error", error: err.message });
+    return res.status(500).json({ success: false, message: "Lỗi" });
   }
 };
 
@@ -225,6 +218,6 @@ export const updateStatus = async (req, res) => {
     return res.json({ success: true, message: "Status Updated" });
   } catch (err) {
     console.error("💥 updateStatus error:", err);
-    return res.status(500).json({ success: false, message: "Error", error: err.message });
+    return res.status(500).json({ success: false, message: "Lỗi" });
   }
 };

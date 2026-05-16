@@ -1,12 +1,16 @@
 import axios from "axios";
 
 const BASE_URL = (import.meta.env?.VITE_API_URL || "http://localhost:4000").trim();
+const ADMIN_API_KEY = import.meta.env?.VITE_ADMIN_API_KEY || "";
 
 export const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 60000,        // 60s để chờ Render “wake up”
+  timeout: 60000,
   withCredentials: false,
-  headers: { Accept: "application/json" },
+  headers: {
+    Accept: "application/json",
+    ...(ADMIN_API_KEY ? { "x-admin-api-key": ADMIN_API_KEY } : {}),
+  },
 });
 
 export const authHeader = (token) =>

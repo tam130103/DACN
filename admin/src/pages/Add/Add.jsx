@@ -112,8 +112,7 @@ const Add = () => {
     }
   };
 
-  const previewSrc =
-    image && filePreviewUrl.current ? filePreviewUrl.current : assets.upload_area;
+  const previewSrc = filePreviewUrl.current || assets.upload_area;
 
   return (
     <div className="add">

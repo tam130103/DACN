@@ -91,6 +91,22 @@ const StoreContextProvider = (props) => {
     }
   };
 
+  // Xoá hẳn item khỏi giỏ (không chỉ giảm số lượng)
+  const deleteItemFromCart = async (itemId) => {
+    setCartItems((prev) => {
+      const newCartItems = { ...prev };
+      delete newCartItems[itemId];
+      return newCartItems;
+    });
+    if (token) {
+      try {
+        await api.post("/api/cart/delete", { itemId }, { headers: { Authorization: `Bearer ${token}` } });
+      } catch (error) {
+        console.error("Error deleting item from cart:", error);
+      }
+    }
+  };
+
   // Tính tổng tiền giỏ hàng
   const calculateCartTotal = () => {
     let totalAmount = 0;
@@ -129,6 +145,7 @@ const StoreContextProvider = (props) => {
     setCartItems,
     addToCart,
     removeFromCart,
+    deleteItemFromCart,
     calculateCartTotal,
     getTotalCartAmount: calculateCartTotal,
     token,

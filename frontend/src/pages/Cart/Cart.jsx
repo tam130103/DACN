@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useMemo, useCallback } from "react";
 import "./Cart.css";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
-import { api } from "../../api/client";
 import { assets } from "../../assets/assets";
 
 const Cart = () => {
@@ -14,9 +13,9 @@ const Cart = () => {
   const {
     cartItems,
     foodList = [],
-    removeFromCart,
-    setCartItems,           // ⬅️ để xoá hẳn một dòng
     getTotalCartAmount,
+    token,
+    deleteItemFromCart,
   } = useContext(StoreContext);
 
   const navigate = useNavigate();
@@ -48,13 +47,8 @@ const Cart = () => {
     return `${API_BASE}/images/${img}`;
   };
 
-  // xoá hẳn 1 dòng (đặt quantity về 0)
-  const removeLine = (id) => {
-    setCartItems((prev) => {
-      const next = { ...prev };
-      delete next[id];
-      return next;
-    });
+  const removeLine = async (id) => {
+    await deleteItemFromCart(id);
   };
 
   const isEmpty =

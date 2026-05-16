@@ -1,8 +1,9 @@
 # -------------------- STAGE 1: BUILD ADMIN APP --------------------
     FROM node:20-alpine as builder
 
-    # KHAI BÁO ARG để nhận VITE_API_URL từ docker-compose.yml
+    # KHAI BÁO ARG để nhận VITE_API_URL và VITE_ADMIN_API_KEY từ docker-compose.yml
     ARG VITE_API_URL 
+    ARG VITE_ADMIN_API_KEY
     
     WORKDIR /app/admin
     

@@ -17,6 +17,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.3",
     "multer": "^1.4.5-lts.2",
+    "express-rate-limit": "^7.5.0",
     "stripe": "^18.1.0",
     "validator": "^13.15.0"
   },

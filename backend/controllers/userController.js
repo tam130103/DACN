@@ -23,14 +23,15 @@ const loginUser = async (req, res) => {
 
     // Tìm người dùng theo email
     const user = await userModel.findOne({ email });
+
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res.status(401).json({ success: false, message: "Email hoặc mật khẩu không đúng" });
     }
 
     // Kiểm tra mật khẩu
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ success: false, message: "Invalid credentials" });
+      return res.status(401).json({ success: false, message: "Email hoặc mật khẩu không đúng" });
     }
 
     // Tạo token
