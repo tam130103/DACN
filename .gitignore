@@ -26,6 +26,10 @@ out/
 *.swo
 .DS_Store
 Thumbs.db
+*.zip
+*.rar
+*.7z
+
 
 # OS
 .DS_Store
