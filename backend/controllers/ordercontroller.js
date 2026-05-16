@@ -6,8 +6,7 @@ import Stripe from "stripe";
 
 // --- ENV checks ---
 if (!process.env.STRIPE_SECRET_KEY) {
-  console.error("❌ STRIPE_SECRET_KEY is missing. Set it in your environment.");
-  process.exit(1);
+  console.warn("⚠️ STRIPE_SECRET_KEY is missing. Stripe payments will fail.");
 }
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
@@ -16,16 +15,11 @@ const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 const asString = (v) => (typeof v === "string" ? v.trim() : String(v || "").trim());
 const isTrue = (v) => v === true || v === "true" || v === 1 || v === "1";
 
-/**
- * POST /api/order/place
- * req.userId có từ authMiddleware (đọc Authorization: Bearer <token> hoặc header 'token')
- */
 export const placeOrder = async (req, res) => {
   try {
     const userId = req.userId;
     const { items, amount: clientAmount, address } = req.body;
 
-    // ---- guard basic ----
     if (!userId) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
@@ -36,29 +30,28 @@ export const placeOrder = async (req, res) => {
       return res.status(400).json({ success: false, message: "Thiếu thông tin địa chỉ." });
     }
 
-    // ---- normalize address: chỉ giữ các trường cần, không bắt buộc country/state/postalCode ----
     const cleanAddress = {
       firstName: asString(address.firstName),
       lastName: asString(address.lastName),
       email: asString(address.email),
       street: asString(address.street),
       city: asString(address.city),
-      state: asString(address.state || ""),         // optional
-      postalCode: asString(address.postalCode || ""), // optional
-      country: asString(address.country || ""),       // optional
+      state: asString(address.state || ""),
+      postalCode: asString(address.postalCode || ""),
+      country: asString(address.country || ""),
       phone: asString(address.phone),
     };
 
-    // kiểm tra tối thiểu
     for (const key of ["firstName", "lastName", "email", "street", "city", "phone"]) {
       if (!cleanAddress[key]) {
         return res.status(400).json({ success: false, message: `Thiếu trường địa chỉ: ${key}` });
       }
     }
+    if (cleanAddress.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanAddress.email)) {
+      return res.status(400).json({ success: false, message: "Email không hợp lệ." });
+    }
 
-    // ---- build items từ DB & tính tiền trên server ----
-    // shipping fee in minor unit (cents)
-    const SHIPPING_FEE_MINOR = 200; // $2.00
+    const SHIPPING_FEE_MINOR = 200;
     const CURRENCY = "usd";
 
     const populatedItems = [];
@@ -71,7 +64,6 @@ export const placeOrder = async (req, res) => {
 
       const food = await foodModel.findById(itemId);
       if (!food) {
-        // Nếu 1 item không tồn tại: có thể bỏ qua hoặc fail cứng.
         return res.status(400).json({
           success: false,
           message: `Món ăn không tồn tại hoặc đã bị xóa (id: ${itemId}).`,
@@ -98,13 +90,10 @@ export const placeOrder = async (req, res) => {
     const serverTotalMinor = itemsTotalMinor + SHIPPING_FEE_MINOR;
     const serverTotal = serverTotalMinor / 100;
 
-    // Option: cảnh báo nếu clientAmount khác serverTotal (không bắt buộc)
     if (typeof clientAmount === "number" && Math.abs(Number(clientAmount) - serverTotal) > 0.01) {
       console.warn("⚠️ Client amount mismatch. client:", clientAmount, "server:", serverTotal);
-      // vẫn dùng serverTotal để tránh gian lận
     }
 
-    // ---- tạo order (payment=false) ----
     const newOrder = new orderModel({
       userId,
       items: populatedItems,
@@ -115,10 +104,8 @@ export const placeOrder = async (req, res) => {
     });
     await newOrder.save();
 
-    // clear cart của user
     await userModel.findByIdAndUpdate(userId, { cartData: {} });
 
-    // ---- Stripe line items (dùng USD) ----
     const line_items = populatedItems.map((it) => ({
       price_data: {
         currency: CURRENCY,
@@ -131,7 +118,6 @@ export const placeOrder = async (req, res) => {
       quantity: it.quantity,
     }));
 
-    // phí giao hàng
     line_items.push({
       price_data: {
         currency: CURRENCY,
@@ -163,10 +149,6 @@ export const placeOrder = async (req, res) => {
   }
 };
 
-/**
- * POST /api/order/verify
- * body: { orderId, success }
- */
 export const verifyOrder = async (req, res) => {
   try {
     const { orderId, success, sessionId } = req.body;
@@ -180,7 +162,6 @@ export const verifyOrder = async (req, res) => {
     }
 
     if (isTrue(success)) {
-      // ---- Bảo mật: Xác thực session_id với Stripe ----
       if (!sessionId) {
         return res.status(400).json({ success: false, message: "Thiếu sessionId để xác thực thanh toán." });
       }
@@ -190,11 +171,9 @@ export const verifyOrder = async (req, res) => {
         await orderModel.findByIdAndUpdate(orderId, { payment: true });
         return res.json({ success: true, message: "Thanh toán thành công." });
       } else {
-        // Nếu success=true nhưng Stripe chưa báo paid (có thể do lỗi hoặc gian lận)
         return res.status(400).json({ success: false, message: "Thanh toán chưa được hoàn tất trên Stripe." });
       }
     } else {
-      // Khách hàng bấm cancel hoặc lỗi từ phía Stripe
       await orderModel.findByIdAndDelete(orderId);
       return res.json({ success: false, message: "Thanh toán thất bại, đơn hàng đã bị hủy." });
     }
@@ -208,16 +187,13 @@ export const verifyOrder = async (req, res) => {
   }
 };
 
-/**
- * GET /api/order/userorders  (cần auth)
- */
 export const userOrders = async (req, res) => {
   try {
     const userId = req.userId;
     if (!userId) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
-    const orders = await orderModel.find({ userId }).sort({ date: -1 }); // mới nhất trước
+    const orders = await orderModel.find({ userId }).sort({ date: -1 });
     return res.json({ success: true, data: orders });
   } catch (err) {
     console.error("💥 userOrders error:", err);
@@ -229,12 +205,9 @@ export const userOrders = async (req, res) => {
   }
 };
 
-/**
- * GET /api/order/list  (admin)
- */
 export const listOrders = async (_req, res) => {
   try {
-    const orders = await orderModel.find({}).sort({ date: -1 }); // mới nhất trước
+    const orders = await orderModel.find({}).sort({ date: -1 });
     return res.json({ success: true, data: orders });
   } catch (err) {
     console.error("💥 listOrders error:", err);
@@ -242,10 +215,6 @@ export const listOrders = async (_req, res) => {
   }
 };
 
-/**
- * POST /api/order/status  (admin)
- * body: { orderId, status }
- */
 export const updateStatus = async (req, res) => {
   try {
     const { orderId, status } = req.body || {};

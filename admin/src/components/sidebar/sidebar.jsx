@@ -8,9 +8,8 @@ const Sidebar = () => {
     <div className="sidebar">
       {/* Add Items */}
       <NavLink
-        to="/Add"
-        className="sidebar-option"
-        activeClassName="active"
+        to="/add"
+        className={({ isActive }) => `sidebar-option ${isActive ? "active" : ""}`}
       >
         <img src={assets.add_icon} alt="Biểu tượng thêm" />
         <p>Thêm mục</p>
@@ -18,9 +17,8 @@ const Sidebar = () => {
 
       {/* List Items */}
       <NavLink
-        to="/List"
-        className="sidebar-option"
-        activeClassName="active"
+        to="/list"
+        className={({ isActive }) => `sidebar-option ${isActive ? "active" : ""}`}
       >
         <img src={assets.order_icon} alt="Biểu tượng danh sách" />
         <p>Danh sách mục</p>
@@ -28,9 +26,8 @@ const Sidebar = () => {
 
       {/* Orders */}
       <NavLink
-        to="/Orders"
-        className="sidebar-option"
-        activeClassName="active"
+        to="/orders"
+        className={({ isActive }) => `sidebar-option ${isActive ? "active" : ""}`}
       >
         <img src={assets.order_icon} alt="Biểu tượng đơn hàng" />
         <p>Đơn hàng</p>

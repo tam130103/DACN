@@ -1,13 +1,6 @@
 // FoodDelivery/backend/controllers/foodController.js
 import foodModel from '../models/foodModels.js';
-import cloudinary from 'cloudinary';
-
-// Cấu hình Cloudinary từ ENV
-cloudinary.v2.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key:    process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import cloudinary from '../config/cloudinary.js';
 
 const FOLDER = process.env.CLOUDINARY_FOLDER || 'food';
 
@@ -23,7 +16,7 @@ export const addFood = async (req, res) => {
 
     // Upload buffer -> Cloudinary qua data URI
     const dataUri = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
-    const up = await cloudinary.v2.uploader.upload(dataUri, { folder: FOLDER });
+    const up = await cloudinary.uploader.upload(dataUri, { folder: FOLDER });
 
     const doc = await foodModel.create({
       name,
@@ -59,7 +52,7 @@ export const removeFood = async (req, res) => {
     // Nếu có public_id thì xoá trên Cloudinary
     if (item.imagePublicId) {
       try {
-        await cloudinary.v2.uploader.destroy(item.imagePublicId);
+        await cloudinary.uploader.destroy(item.imagePublicId);
       } catch (e) {
         console.warn('Cloudinary destroy warn:', e?.message || e);
       }

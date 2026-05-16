@@ -28,7 +28,7 @@ const Verify = () => {
         const res = await api.post(
           "/api/order/verify",
           { success, orderId, sessionId },
-          { headers: { token } }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
 
         if (res.data?.success) {

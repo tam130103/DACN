@@ -114,12 +114,7 @@ const Orders = () => {
 
               <p>Số món: {order.items?.length || 0}</p>
 
-              <p>
-                {Number(order.amount).toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                })}
-              </p>
+              <p>${Number(order.amount).toFixed(2)}</p>
 
               <select
                 onChange={(e) => statusHandler(e, order._id)}

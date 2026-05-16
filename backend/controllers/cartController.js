@@ -19,7 +19,7 @@ const addToCart = async (req, res) => {
     const updatedUser = await userModel.findByIdAndUpdate(
       userId,
       { $inc: { [`cartData.${itemId}`]: 1 } },
-      { new: true, upsert: true }
+      { new: true }
     );
 
     if (!updatedUser) {

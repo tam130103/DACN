@@ -89,10 +89,7 @@ const List = () => {
           list.map((item) => {
             const priceNum = Number(item.price);
             const priceText = Number.isFinite(priceNum)
-              ? priceNum.toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                })
+              ? `$${priceNum.toFixed(2)}`
               : "—";
 
             return (
